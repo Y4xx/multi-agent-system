@@ -3,11 +3,11 @@ import { Briefcase, Sparkles } from 'lucide-react';
 import { UploadCV } from './components/UploadCV';
 import { OffersList } from './components/OffersList';
 import { LetterPreview } from './components/LetterPreview';
-import { ApplicationStatus, Notification, NotificationType } from './components/ApplicationStatus';
+import { ApplicationStatus, type Notification, type NotificationType } from './components/ApplicationStatus';
 import { Button } from './components/ui/Button';
 import {
-  CVData,
-  JobOffer,
+  type CVData,
+  type JobOffer,
   matchOffers,
   generateMotivationLetter,
   submitApplication,

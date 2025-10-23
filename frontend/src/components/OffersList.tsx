@@ -3,7 +3,7 @@ import { Briefcase, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/Card';
 import { Badge } from './ui/Badge';
-import { JobOffer } from '../api/apiClient';
+import type { JobOffer } from '../api/apiClient';
 
 interface OffersListProps {
   offers: JobOffer[];

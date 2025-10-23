@@ -4,7 +4,7 @@ import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/Card';
 import { Textarea } from './ui/Textarea';
 import { Badge } from './ui/Badge';
-import { JobOffer } from '../api/apiClient';
+import type { JobOffer } from '../api/apiClient';
 
 interface LetterPreviewProps {
   jobOffer: JobOffer;

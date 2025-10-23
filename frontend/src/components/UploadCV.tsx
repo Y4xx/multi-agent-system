@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Upload, FileText, CheckCircle2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
-import { uploadCV, CVData } from '../api/apiClient';
+import { uploadCV, type CVData } from '../api/apiClient';
 
 interface UploadCVProps {
   onCVUploaded: (cvData: CVData) => void;

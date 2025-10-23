@@ -1,11 +1,23 @@
-from sentence_transformers import SentenceTransformer
 from typing import List
 import numpy as np
 
 class NLPService:
     def __init__(self):
         # Using a lightweight model for sentence embeddings
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        # Lazy load to avoid import issues
+        self.model = None
+        self._model_name = 'all-MiniLM-L6-v2'
+    
+    def _load_model(self):
+        """Lazy load the sentence transformer model."""
+        if self.model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                self.model = SentenceTransformer(self._model_name)
+            except Exception as e:
+                print(f"Warning: Could not load sentence transformer model: {e}")
+                print("Using fallback similarity calculation")
+                self.model = False  # Mark as failed to load
     
     def get_embeddings(self, texts: List[str]) -> np.ndarray:
         """
@@ -17,7 +29,35 @@ class NLPService:
         Returns:
             numpy array of embeddings
         """
-        return self.model.encode(texts)
+        self._load_model()
+        
+        if self.model and self.model is not False:
+            return self.model.encode(texts)
+        else:
+            # Fallback: simple bag-of-words representation
+            return self._simple_embeddings(texts)
+    
+    def _simple_embeddings(self, texts: List[str]) -> np.ndarray:
+        """Simple fallback embedding using word presence."""
+        # Create a simple vocabulary from all texts
+        all_words = set()
+        for text in texts:
+            all_words.update(text.lower().split())
+        
+        vocab = sorted(list(all_words))
+        vocab_index = {word: i for i, word in enumerate(vocab)}
+        
+        # Create embeddings
+        embeddings = []
+        for text in texts:
+            words = text.lower().split()
+            vec = np.zeros(len(vocab))
+            for word in words:
+                if word in vocab_index:
+                    vec[vocab_index[word]] = 1
+            embeddings.append(vec)
+        
+        return np.array(embeddings)
     
     def compute_similarity(self, text1: str, text2: str) -> float:
         """
@@ -33,11 +73,15 @@ class NLPService:
         embeddings = self.get_embeddings([text1, text2])
         
         # Compute cosine similarity
-        similarity = np.dot(embeddings[0], embeddings[1]) / (
-            np.linalg.norm(embeddings[0]) * np.linalg.norm(embeddings[1])
-        )
+        norm1 = np.linalg.norm(embeddings[0])
+        norm2 = np.linalg.norm(embeddings[1])
         
-        return float(similarity)
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+        
+        similarity = np.dot(embeddings[0], embeddings[1]) / (norm1 * norm2)
+        
+        return float(max(0.0, min(1.0, similarity)))  # Clamp between 0 and 1
     
     def extract_keywords(self, text: str, top_n: int = 10) -> List[str]:
         """
