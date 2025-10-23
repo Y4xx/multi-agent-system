@@ -92,8 +92,12 @@ async def upload_cv(file: UploadFile = File(...)):
             "data": cv_data
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing CV: {str(e)}")
+        # Log the actual error for debugging but don't expose details
+        print(f"Error uploading CV: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing CV file")
 
 # Get job offers endpoint
 @app.get("/job-offers")
@@ -130,7 +134,9 @@ async def get_job_offers(
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching jobs: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error fetching jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error fetching job offers")
 
 # Match offers endpoint
 @app.post("/match-offers")
@@ -159,7 +165,9 @@ async def match_offers(request: MatchRequest):
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error matching offers: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error matching offers: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error matching offers with CV")
 
 # Generate motivation letter endpoint
 @app.post("/generate-letter")
@@ -191,7 +199,9 @@ async def generate_letter(request: GenerateLetterRequest):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating letter: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error generating letter: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error generating motivation letter")
 
 # Apply to job endpoint
 @app.post("/apply")
@@ -219,7 +229,9 @@ async def apply_to_job(request: ApplyRequest):
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error submitting application: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error submitting application: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting application")
 
 # Bulk apply endpoint
 @app.post("/apply-bulk")
@@ -248,7 +260,9 @@ async def apply_bulk(request: BulkApplyRequest):
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error submitting applications: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error submitting bulk applications: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting applications")
 
 # Get specific job endpoint
 @app.get("/job/{job_id}")
@@ -276,7 +290,9 @@ async def get_job(job_id: int):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching job: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error fetching job: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error fetching job details")
 
 # Get application history endpoint
 @app.get("/applications")
@@ -299,7 +315,9 @@ async def get_applications():
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching applications: {str(e)}")
+        # Log the actual error for debugging
+        print(f"Error fetching applications: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error fetching application history")
 
 if __name__ == "__main__":
     import uvicorn

@@ -73,9 +73,11 @@ class EmailService:
             }
             
         except Exception as e:
+            # Log error for debugging
+            print(f"Email send error: {str(e)}")
             return {
                 'success': False,
-                'message': f'Failed to send email: {str(e)}'
+                'message': 'Failed to send email. Please check your email configuration.'
             }
     
     def send_job_application(
