@@ -1,0 +1,53 @@
+{
+  "name": "John Smith",
+  "email": "john.smith@email.com",
+  "phone": "+33 6 12 34",
+  "skills": [
+    "Git",
+    "REST APIs",
+    "learn",
+    "PyTorch",
+    "Machine Learning: TensorFlow",
+    "scikit",
+    "CI/CD",
+    "Node.js",
+    "Express",
+    "PostgreSQL",
+    "TensorFlow",
+    "Linux",
+    "NLP",
+    "REST API",
+    "TypeScript",
+    "Redis",
+    "JavaScript",
+    "MongoDB",
+    "Agile",
+    "Cloud & DevOps: AWS"
+  ],
+  "experience": [
+    {
+      "title": "Senior Software Engineer",
+      "company": "Tech Solutions Inc.\nParis, France"
+    },
+    {
+      "title": "Present",
+      "company": "Developed and maintained full"
+    },
+    {
+      "title": "React and FastAPI",
+      "company": "Implemented machine learning models for intelligent data processing"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Computer Science",
+      "institution": ""
+    }
+  ],
+  "languages": [
+    "French",
+    "English",
+    "Spanish"
+  ],
+  "raw_text": "John Smith\njohn.smith@email.com\n+33 6 12 34 56 78\n\nPROFESSIONAL SUMMARY\nExperienced Full Stack Developer with 5+ years of expertise in Python, React, and TypeScript. \nPassionate about building scalable web applications and implementing AI/ML solutions.\n\nTECHNICAL SKILLS\n- Programming Languages: Python, JavaScript, TypeScript, Java\n- Frameworks: React, FastAPI, Django, Node.js, Express\n- Databases: PostgreSQL, MongoDB, Redis\n- Cloud & DevOps: AWS, Docker, Kubernetes, CI/CD\n- Machine Learning: TensorFlow, PyTorch, scikit-learn, NLP\n- Tools: Git, Linux, Tailwind CSS, REST APIs\n\nWORK EXPERIENCE\n\nSenior Software Engineer at Tech Solutions Inc.\nParis, France | 2021 - Present\n- Developed and maintained full-stack web applications using React and FastAPI\n- Implemented machine learning models for intelligent data processing\n- Led a team of 3 junior developers in agile environment\n- Improved application performance by 40% through optimization\n\nFull Stack Developer at Digital Innovations\nLyon, France | 2019 - 2021\n- Built responsive web applications using React and Node.js\n- Designed and implemented RESTful APIs\n- Collaborated with UX designers to improve user experience\n- Managed cloud infrastructure on AWS\n\nEDUCATION\n\nMaster of Science in Computer Science\nUniversity of Paris | 2017 - 2019\n\nBachelor of Science in Software Engineering  \nUniversity of Lyon | 2014 - 2017\n\nLANGUAGES\n- French (Native)\n- English (Fluent)\n- Spanish (Intermediate)\n\nCERTIFICATIONS\n- AWS Certified Solutions Architect\n- Google Cloud Professional Data Engineer\n"
+}
