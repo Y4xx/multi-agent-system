@@ -1,21 +1,23 @@
 # 🤖 Multi-Agent System for Intelligent Job & Internship Discovery and Application Automation
 
-An **AI-powered full-stack application** that automates the entire process of discovering, matching, and applying to jobs or internships — from CV analysis to sending personalized applications.
+An **AI-powered full-stack application** powered by **CrewAI** that automates the entire process of discovering, matching, and applying to jobs or internships — from CV analysis to sending **LLM-generated French cover letters**.
+
+> **🆕 Now powered by CrewAI with OpenAI LLM integration for professional French cover letter generation!**
 
 ---
 
 ## 🚀 Project Overview
 
-This system uses **multiple intelligent agents** to handle each step of the application process:
+This system uses **CrewAI multi-agent framework** with **OpenAI's LLM** to handle each step of the application process:
 
 1. **Upload a CV** → The system analyzes it.
-2. **Fetch job/internship offers** (from dummy data or APIs).
-3. **Match the CV** with the best offers.
+2. **Fetch job/internship offers** (from database or APIs).
+3. **Match the CV** with the best offers using NLP.
 4. **Display the top 10 matching offers**.
-5. **Generate a personalized "lettre de motivation."**
+5. **Generate a personalized French "lettre de motivation"** using AI (LLM).
 6. **Automatically send job applications via email.**
 
-The entire workflow is managed by a **coordinator agent** that orchestrates all other agents.
+The entire workflow is managed by a **CrewAI-based coordinator agent** that orchestrates all other specialized agents.
 
 ---
 
@@ -26,24 +28,37 @@ The entire workflow is managed by a **coordinator agent** that orchestrates all 
 - **Purpose:** User interface for uploading CVs, viewing offers, and sending applications.
 - **Communication:** RESTful API calls to FastAPI backend.
 
-### **Backend**
-- **Tech Stack:** Python + FastAPI
+### **Backend (CrewAI-Powered)**
+- **Tech Stack:** Python + FastAPI + CrewAI + OpenAI + LangChain
+- **Architecture:** Multi-agent system with LLM integration
 - **Purpose:** Hosts all agents, APIs, and data processing logic.
-- **Database:** SQLite (for future use)
+- **Database:** JSON (SQLite for future use)
 - **Communication:** REST API (CORS enabled)
 
 ---
 
-## 🧩 Agents Overview
+## 🤖 CrewAI Agents Overview
 
-| Agent | Description |
-|--------|-------------|
-| `cv_analysis_agent.py` | Parses and extracts structured data from uploaded CVs. |
-| `job_fetcher_agent.py` | Fetches job/internship offers (dummy data or external API). |
-| `matching_agent.py` | Computes similarity between CV and offers using NLP. |
-| `motivation_agent.py` | Generates a personalized "lettre de motivation." |
-| `application_agent.py` | Sends job applications via email. |
-| `coordinator_agent.py` | Orchestrates the entire workflow between agents. |
+| Agent | Role | Capabilities |
+|-------|------|--------------|
+| **CV Analysis Agent** | CV Analysis Specialist | Parses and extracts structured data from CVs (PDF, DOCX, TXT) |
+| **Job Fetcher Agent** | Job Market Researcher | Fetches and filters job offers by type, location, or keyword |
+| **Matching Agent** | Job Match Analyst | Computes similarity scores and ranks jobs by compatibility |
+| **Cover Letter Agent** | Expert French Writer | **Generates personalized French cover letters using LLM** |
+| **Application Agent** | Submission Specialist | Prepares and sends job applications via email |
+| **Coordinator Agent** | Workflow Manager | Orchestrates the entire workflow between agents |
+
+### 🌟 Key Feature: LLM-Powered French Cover Letters
+
+The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
+- ✅ Professional French business letters
+- ✅ Personalized to job requirements and candidate profile
+- ✅ ATS-optimized formatting
+- ✅ Proper French salutation and closing
+- ✅ 3-4 concise paragraphs
+- ✅ Integration of custom candidate messages
+
+[See example cover letter](backend/SAMPLE_COVER_LETTER.md)
 
 ---
 
@@ -67,12 +82,26 @@ The entire workflow is managed by a **coordinator agent** that orchestrates all 
    pip install -r requirements.txt
    ```
 
-3. **Configure environment variables (optional):**
+3. **Configure environment variables (REQUIRED for LLM):**
    ```bash
    cp .env.example .env
-   # Edit .env to add your email credentials for actual email sending
-   # If not configured, emails will be simulated
+   # Edit .env to add your OpenAI API key and email credentials
    ```
+   
+   **Required in `.env` file:**
+   ```bash
+   # LLM Configuration (REQUIRED)
+   OPENAI_API_KEY=sk-your-actual-openai-api-key
+   MODEL_NAME=gpt-4o-mini
+   
+   # Email Configuration (OPTIONAL - for actual email sending)
+   SMTP_SERVER=smtp.gmail.com
+   SMTP_PORT=587
+   SENDER_EMAIL=your-email@gmail.com
+   SENDER_PASSWORD=your-app-password
+   ```
+   
+   > **Get OpenAI API Key:** Visit [OpenAI Platform](https://platform.openai.com/) to create an account and generate an API key.
 
 4. **Start the backend server:**
    ```bash
@@ -80,6 +109,8 @@ The entire workflow is managed by a **coordinator agent** that orchestrates all 
    ```
 
    The backend will be available at `http://localhost:8000`
+   
+   > **📖 For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](backend/DEPLOYMENT_GUIDE.md)**
 
 ### Frontend Setup
 
@@ -144,14 +175,17 @@ The entire workflow is managed by a **coordinator agent** that orchestrates all 
 
 ## 🧰 Key Features
 
-### Backend Features
+### Backend Features (CrewAI-Powered)
+- ✅ **CrewAI multi-agent architecture** with specialized roles
+- ✅ **LLM-powered French cover letter generation** using OpenAI
 - ✅ CV parsing and data extraction (PDF, DOCX, TXT)
 - ✅ NLP-based job matching using text similarity
-- ✅ Intelligent motivation letter generation
+- ✅ **Personalized, ATS-optimized cover letters** in French
 - ✅ Email application automation (with simulation mode)
 - ✅ RESTful API with FastAPI
 - ✅ CORS enabled for frontend integration
 - ✅ Comprehensive error handling
+- ✅ **Hybrid architecture** (CrewAI + legacy services for reliability)
 
 ### Frontend Features
 - ✅ Modern React + TypeScript application
@@ -218,13 +252,55 @@ curl -X POST "http://localhost:8000/upload-cv" \
 
 ---
 
+## 🆕 What's New in v2.0 (CrewAI)
+
+### Major Changes
+1. **🤖 CrewAI Integration**
+   - Multi-agent framework with specialized agent roles
+   - Proper agent orchestration with tasks and workflows
+   - Better separation of concerns
+
+2. **🧠 LLM-Powered Cover Letters**
+   - Uses OpenAI GPT-4o-mini for cover letter generation
+   - Professional French business letters
+   - Personalized to each job and candidate
+   - ATS-optimized formatting
+
+3. **🏗️ New Architecture**
+   - `crew/` module with agents, tasks, and orchestration
+   - `api/` module with clean route definitions
+   - Hybrid approach: CrewAI + reliable legacy services
+
+4. **📚 Enhanced Documentation**
+   - [DEPLOYMENT_GUIDE.md](backend/DEPLOYMENT_GUIDE.md) - Complete deployment instructions
+   - [crew/README.md](backend/crew/README.md) - CrewAI module documentation
+   - [SAMPLE_COVER_LETTER.md](backend/SAMPLE_COVER_LETTER.md) - Example output
+
+### Migration Notes
+- **✅ Backward Compatible:** All existing API endpoints work unchanged
+- **✅ Frontend Compatible:** No changes needed to existing frontend
+- **✅ Legacy Preserved:** Original agents still available as fallback
+- **🔑 New Requirement:** OpenAI API key now required for cover letter generation
+
+---
+
 ## 📝 Project Structure
 
 ```
 multi-agent-system/
 ├── backend/
-│   ├── main.py                 # FastAPI application
-│   ├── agents/                 # Agent modules
+│   ├── main.py                 # FastAPI application (CrewAI-powered)
+│   ├── crew/                   # 🆕 CrewAI module
+│   │   ├── __init__.py
+│   │   ├── agents.py           # Agent definitions
+│   │   ├── tasks.py            # Task definitions
+│   │   ├── crew.py             # Workflow orchestration
+│   │   ├── llm.py              # LLM configuration
+│   │   └── README.md           # Module documentation
+│   ├── api/                    # 🆕 API routes module
+│   │   ├── __init__.py
+│   │   └── routes.py           # Refactored endpoints
+│   ├── agents/                 # Legacy agents (still used)
 │   │   ├── cv_analysis_agent.py
 │   │   ├── job_fetcher_agent.py
 │   │   ├── matching_agent.py
@@ -238,8 +314,10 @@ multi-agent-system/
 │   ├── data/                   # Data files
 │   │   ├── job_offers.json
 │   │   └── parsed_cv.json
-│   ├── requirements.txt
-│   └── .env.example
+│   ├── requirements.txt        # Updated with CrewAI
+│   ├── .env.example            # 🆕 Includes OpenAI config
+│   ├── DEPLOYMENT_GUIDE.md     # 🆕 Deployment instructions
+│   └── SAMPLE_COVER_LETTER.md  # 🆕 Example output
 └── frontend/
     ├── src/
     │   ├── components/         # React components

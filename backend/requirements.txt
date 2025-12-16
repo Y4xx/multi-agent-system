@@ -2,9 +2,12 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 sentence-transformers==2.7.0
-pydantic==2.5.0
+pydantic>=2.6.1
 python-docx==1.1.0
 pypdf2==3.0.1
 yagmail==0.15.293
 python-dotenv==1.0.0
 aiosqlite==0.19.0
+crewai==0.28.8
+crewai-tools==0.1.6
+langchain-openai==0.0.5
