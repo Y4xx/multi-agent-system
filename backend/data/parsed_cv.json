@@ -1,53 +1,27 @@
 {
-  "name": "John Smith",
-  "email": "john.smith@email.com",
-  "phone": "+33 6 12 34",
+  "name": "",
+  "email": ".oujama@gmail.com",
+  "phone": "06 2023\n10",
   "skills": [
-    "Git",
-    "REST APIs",
-    "learn",
-    "PyTorch",
-    "Machine Learning: TensorFlow",
-    "scikit",
-    "CI/CD",
-    "Node.js",
-    "Express",
-    "PostgreSQL",
-    "TensorFlow",
+    "Java",
+    "Docker",
     "Linux",
-    "NLP",
-    "REST API",
-    "TypeScript",
-    "Redis",
-    "JavaScript",
-    "MongoDB",
     "Agile",
-    "Cloud & DevOps: AWS"
+    "Tailwind",
+    "Bootstrap",
+    "TypeScript",
+    "SQL",
+    "Git",
+    "JavaScript",
+    "React",
+    "MongoDB",
+    "Node.js",
+    "Vue",
+    "CSS",
+    "Python"
   ],
-  "experience": [
-    {
-      "title": "Senior Software Engineer",
-      "company": "Tech Solutions Inc.\nParis, France"
-    },
-    {
-      "title": "Present",
-      "company": "Developed and maintained full"
-    },
-    {
-      "title": "React and FastAPI",
-      "company": "Implemented machine learning models for intelligent data processing"
-    }
-  ],
-  "education": [
-    {
-      "degree": "Master of Science in Computer Science",
-      "institution": ""
-    }
-  ],
-  "languages": [
-    "French",
-    "English",
-    "Spanish"
-  ],
-  "raw_text": "John Smith\njohn.smith@email.com\n+33 6 12 34 56 78\n\nPROFESSIONAL SUMMARY\nExperienced Full Stack Developer with 5+ years of expertise in Python, React, and TypeScript. \nPassionate about building scalable web applications and implementing AI/ML solutions.\n\nTECHNICAL SKILLS\n- Programming Languages: Python, JavaScript, TypeScript, Java\n- Frameworks: React, FastAPI, Django, Node.js, Express\n- Databases: PostgreSQL, MongoDB, Redis\n- Cloud & DevOps: AWS, Docker, Kubernetes, CI/CD\n- Machine Learning: TensorFlow, PyTorch, scikit-learn, NLP\n- Tools: Git, Linux, Tailwind CSS, REST APIs\n\nWORK EXPERIENCE\n\nSenior Software Engineer at Tech Solutions Inc.\nParis, France | 2021 - Present\n- Developed and maintained full-stack web applications using React and FastAPI\n- Implemented machine learning models for intelligent data processing\n- Led a team of 3 junior developers in agile environment\n- Improved application performance by 40% through optimization\n\nFull Stack Developer at Digital Innovations\nLyon, France | 2019 - 2021\n- Built responsive web applications using React and Node.js\n- Designed and implemented RESTful APIs\n- Collaborated with UX designers to improve user experience\n- Managed cloud infrastructure on AWS\n\nEDUCATION\n\nMaster of Science in Computer Science\nUniversity of Paris | 2017 - 2019\n\nBachelor of Science in Software Engineering  \nUniversity of Lyon | 2014 - 2017\n\nLANGUAGES\n- French (Native)\n- English (Fluent)\n- Spanish (Intermediate)\n\nCERTIFICATIONS\n- AWS Certified Solutions Architect\n- Google Cloud Professional Data Engineer\n"
+  "experience": [],
+  "education": [],
+  "languages": [],
+  "raw_text": "Technologies de programmation : JavaScript, PHP, Python, Java, Node.js , TypeScript, SQL, MongoDB,\nExpress.js.\nFrameworks : React.js, Vue.js, Laravel, Symfony, JEE, Tailwind CSS, Bootstrap, jQuery, Livewire, Inertia.js\nOutils de développement : Visual Studio Code, Git , GitHub, GitLab, Postman, Méthodologie Agile,\nDocker, Figma, StarUML.\nQualités personnelles : Grande attention aux détails, tant dans le code que dans les interfaces.\nEsprit d'apprentissage : Auto-motivé et toujours en quête d'apprentissage continu.\nSystème d'exploitation : Linux , macOS , Windows.\nMajjane\nMajjane\nFreelanceDéveloppeur Web – Laravel\nDéveloppeur Web – Laravel\nDéveloppeur Web à temps partielDéveloppement d'une application web avec Laravel pour la gestion et l'impression de chèques\nbancaires et de lettres de crédit.\nContribué à l'amélioration de l'application web existante en intégrant des fonctionnalités\nsupplémentaires.\nCollaboration avec l'équipe technique pour optimiser les performances et la sécurité des\ntransactions bancaires.\nProjet 1 : Développement d'une boutique en ligne avec Laravel et Vue.js pour la gestion des ventes et\ndes commandes (vape town).\nProjet 2 : Conception et développement d'un système de point de vente pour un magasin, avec gestion\ndes stocks et des ventes en temps réel (vape town).\nProjet 3 : Création d'une application de point de vente pour un café shop(Café Royal), intégrant la\ngestion des commandes et des paiements.\nTâche spécifique : Système d'authentification pour l'application \"App24\" en utilisant React pour le front-\nend et Laravel pour le back-end. Les fonctionnalités incluent la gestion des connexion utilisateur, la\nréinitialisation de mot de passe par code, et la vérification d'email aussi par code.01/05 - 01/06 2023\n10/07 - 10/10 2023\n01/02 - 20/08 2024COMPÉTENCESYassine.oujama@gmail.com\n(+212) 671 227 672\nLinkedIn : https://www.linkedin.com/in/yassine-oujama/\nEXPÉRIENCE PROFESSIONNELLEO U JAM A YASSIN E\nDÉVELOPPEUR FULL-STACK JUNIOR.\ndigisystems\nDéveloppeur Web –  Vue.js (Dispo.work)\nDéveloppement du front-end d’une application de gestion des ressources externes avec Vue.js\n(TypeScript) et ShadCN, intégrant sourcing, onboarding, suivi des compétences et gestion administrative\navec optimisation UX/UI.13/10 2024 - à ce jour\nDéveloppeur Web – Vue.js, Inertia.js et Laravel (wishbone)\nDéveloppement d’une nouvelle version d’une application de location de voitures avec Vue.js\n(TypeScript), Inertia.js et Laravel, intégrant gestion des réservations, paiements en ligne, suivi des\nvéhicules, gestion des clients, et tableau de bord analytique pour une meilleure prise de décision.\nDéveloppeur Web – Laravel & Livewire (Maison Marignan)\nDéveloppement et amélioration d’un CRM pour une clinique de médecine esthétique avec Laravel et\nLivewire, intégrant gestion des patients, rendez-vous et dossiers médicaux.\nScrum Foundation Professional Certificate (SFPC)\nGITEX AFRICA Morocco : Smart cities contest awards held by IEEE .\nMeta Certification en Développement React Avancé. (bit.ly/Yo-React)\nMicrosoft Office Specialist: Excel Associate (Office 2019).\nPréparation à la certification Alx Reconnu par Holberton School en génie logiciel (Software Engineering).CERTIFICATION\nLANGUAGES \nArabe : Langue maternelle\nFrançais : Courant\nAnglais : CourantFORMATION\n2021/2023 – Technicien Spécialisé en Développement Digital Option Web Full-stack.\nInstitut Spécialisé de Technologie Appliquée (ISTA) –Temara2020/2021 – Baccalauréat International sciences expérimentales, option Sciences physique Lycée Abi bakr Razzi, Skhirat– Temara2023/(à ce jour) - ALX Software Engineering.\nGénie Logiciel Dans Alx Reconnu par Holberton School.2023/2024 - Licence Professionnelle en Logiciels et Développement Web.\nTitulaire d'une Licence Professionnelle en Logiciel et Développement Web à l'École Normale Supérieure de\nTétouan(ENST) .2024/(à ce jour) - Master en Business Intelligence et Big Data Analytics.\nPréparer un Master en Business Intelligence et Big Data Analytics à la Faculté des Sciences d'El Jadida (FSJ).\n"
 }
