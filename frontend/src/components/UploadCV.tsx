@@ -50,7 +50,7 @@ export function UploadCV({ onCVUploaded }: UploadCVProps) {
   };
 
   return (
-    <Card>
+    <Card className='bg-white border-gray-100'>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-6 w-6" />

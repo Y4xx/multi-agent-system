@@ -41,7 +41,7 @@ export function LetterPreview({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">

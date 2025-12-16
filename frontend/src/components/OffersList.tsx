@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Briefcase, MapPin, Calendar, DollarSign } from 'lucide-react';
+import { Briefcase, MapPin, Calendar, DollarSign, Check } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/Card';
 import { Badge } from './ui/Badge';
@@ -58,9 +58,8 @@ export function OffersList({ offers, onSelectOffer }: OffersListProps) {
         {offers.map((offer) => (
           <Card
             key={offer.id}
-            className={`hover:shadow-md transition-shadow ${
-              selectedOffers.has(offer.id) ? 'ring-2 ring-primary' : ''
-            }`}
+            className={`hover:shadow-md transition-shadow bg-white border-gray-100 ${selectedOffers.has(offer.id) ? 'ring-2 ring-primary' : ''
+              }`}
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -122,13 +121,30 @@ export function OffersList({ offers, onSelectOffer }: OffersListProps) {
             </CardContent>
 
             <CardFooter className="gap-2">
-              <Button
-                variant={selectedOffers.has(offer.id) ? 'default' : 'outline'}
-                onClick={() => toggleOfferSelection(offer.id)}
-                className="flex-1"
-              >
-                {selectedOffers.has(offer.id) ? 'Selected' : 'Select'}
-              </Button>
+              {selectedOffers.has(offer.id) ? (
+                <Button
+                  onClick={() => toggleOfferSelection(offer.id)}
+                  className="flex-1 bg-green-200 text-green-700 hover:bg-green-200 space-x-2"
+                >
+                  <Check className='size-5' />
+                  <span>
+                    Selected
+                  </span>
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleOfferSelection(offer.id)}
+                  className="flex-1 bg-gray-100"
+                >
+                  Select
+                </Button>
+              )}
+
+
+
+
+
+
               <Button
                 variant="secondary"
                 onClick={() => onSelectOffer(offer)}

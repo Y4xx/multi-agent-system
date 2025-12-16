@@ -45,7 +45,7 @@ function App() {
   const handleCVUploaded = async (data: CVData) => {
     setCvData(data);
     addNotification('success', 'CV Uploaded', 'Your CV has been analyzed successfully!');
-    
+
     // Automatically fetch matching job offers
     await handleFindMatches(data);
   };
@@ -60,7 +60,7 @@ function App() {
     setLoading(true);
     try {
       const response = await matchOffers(cvToUse, { top_n: 10 });
-      
+
       if (response.success) {
         setJobOffers(response.data);
         addNotification(
@@ -88,10 +88,10 @@ function App() {
 
     setLoading(true);
     setSelectedJob(offer);
-    
+
     try {
       const response = await generateMotivationLetter(cvData, offer.id);
-      
+
       if (response.success) {
         setMotivationLetter(response.data.motivation_letter);
         setMatchExplanation(response.data.match_explanation);
@@ -116,7 +116,7 @@ function App() {
 
     try {
       const response = await submitApplication(cvData, selectedJob.id, letter);
-      
+
       if (response.success) {
         addNotification(
           'success',
@@ -139,7 +139,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm">
+      <header className="bg-white  shadow-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -207,8 +207,17 @@ function App() {
         onDismiss={dismissNotification}
       />
 
+      <div className='grid grid-cols-2 w-full  px-22 space-x-4'>
+        <Button className='bg-red-50 text-red-800 hover:bg-red-50'>
+          Cancel
+        </Button>
+        <Button className='bg-green-100 text-green-700'>
+          Sent emails
+        </Button>
+      </div>
+
       {/* Footer */}
-      <footer className="mt-12 py-6 text-center text-sm text-muted-foreground border-t">
+      <footer className="mt-12 py-6 text-center text-sm text-muted-foreground bg-white">
         <p>Multi-Agent Job Application System &copy; 2024</p>
       </footer>
     </div>
