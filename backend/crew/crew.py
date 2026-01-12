@@ -126,43 +126,65 @@ class JobApplicationCrew:
         """
         # Use Groq-powered service for ultra-targeted cover letters
         try:
+            # Validate inputs
+            if not cv_data: 
+                raise ValueError("CV data is empty or None")
+            if not job_data:
+                raise ValueError("Job data is empty or None")
+            
+            # Check if Groq service is available
+            if not hasattr(groq_cover_letter_service, 'is_available') or not groq_cover_letter_service.is_available():
+                print("Groq service unavailable, using CrewAI fallback...")
+                raise Exception("Groq service not configured")
+            
             cover_letter = groq_cover_letter_service.generate_cover_letter(
                 cv_data=cv_data,
                 job_data=job_data,
                 custom_message=custom_message
             )
             return cover_letter
+            
         except Exception as e:
-            print(f"Error generating cover letter with Groq: {str(e)}")
+            error_msg = f"Error generating cover letter with Groq: {str(e)}"
+            print(error_msg)
+            print(f"CV data keys: {list(cv_data.keys()) if cv_data else 'None'}")
+            print(f"Job data keys: {list(job_data.keys()) if job_data else 'None'}")
+            
             # Fallback to CrewAI if Groq fails
             print("Falling back to CrewAI cover letter generation...")
             
-            # Create the cover letter task
-            task = create_cover_letter_task(
-                self.cover_letter_agent,
-                cv_data,
-                job_data,
-                custom_message
-            )
-            
-            # Create a crew for this specific task
-            crew = Crew(
-                agents=[self.cover_letter_agent],
-                tasks=[task],
-                process=Process.sequential,
-                verbose=True
-            )
-            
-            # Execute and get the result
-            result = crew.kickoff()
-            
-            # Extract the letter from the result
-            if hasattr(result, 'raw'):
-                return result.raw
-            elif isinstance(result, str):
-                return result
-            else:
-                return str(result)
+            try:
+                # Create the cover letter task
+                task = create_cover_letter_task(
+                    self.cover_letter_agent,
+                    cv_data,
+                    job_data,
+                    custom_message
+                )
+                
+                # Create a crew for this specific task
+                crew = Crew(
+                    agents=[self.cover_letter_agent],
+                    tasks=[task],
+                    process=Process.sequential,
+                    verbose=True
+                )
+                
+                # Execute and get the result
+                result = crew.kickoff()
+                
+                # Extract the letter from the result
+                if hasattr(result, 'raw'):
+                    return result.raw
+                elif isinstance(result, str):
+                    return result
+                else:
+                    return str(result)
+                    
+            except Exception as fallback_error:
+                error_detail = f"Both Groq and CrewAI failed. Groq: {str(e)}, CrewAI: {str(fallback_error)}"
+                print(error_detail)
+                raise Exception(error_detail)
     
     def submit_application(self, cv_data: Dict, job_data: Dict, 
                           motivation_letter: str) -> Dict:
