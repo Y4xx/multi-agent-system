@@ -65,7 +65,7 @@ class GroqCoverLetterService:
         
         return [req.strip() for req in all_requirements if req.strip()]
     
-    def _match_skills(self, cv_data: Dict, job_data: Dict) -> Tuple[List[str], List[str]]:
+    def _match_skills(self, cv_data: Dict, job_data: Dict) -> List[Tuple[str, str]]:
         """
         Match candidate skills with job requirements.
         
@@ -74,64 +74,92 @@ class GroqCoverLetterService:
             job_data: Job offer data
             
         Returns:
-            Tuple of (matched_skills, missing_skills)
+            List of tuples (candidate_skill, matched_requirement)
         """
-        cv_skills = set(skill.lower() for skill in self._extract_skills(cv_data))
-        job_requirements = set(req.lower() for req in self._extract_job_requirements(job_data))
+        cv_skills = self._extract_skills(cv_data)
+        job_requirements = self._extract_job_requirements(job_data)
         
         # Extract potential skill keywords from job description (more conservative)
         description = job_data.get('description', '') or job_data.get('description_text', '')
         if description:
             # Look for capitalized words, tech terms, or words with numbers/special chars
             tech_words = re.findall(r'\b[A-Z][a-z]*(?:[A-Z][a-z]*)*\b|[a-z]+\+\+|[a-z]+\.js|[a-z]+[0-9]', description)
-            job_requirements.update([w.lower() for w in tech_words if len(w) > 3])
+            job_requirements.extend([w for w in tech_words if len(w) > 3])
         
         # Find matches using word boundary matching to avoid false positives
         matched = []
+        cv_skills_lower = [s.lower() for s in cv_skills]
+        
         for cv_skill in cv_skills:
+            cv_skill_lower = cv_skill.lower()
             for job_req in job_requirements:
+                job_req_lower = job_req.lower()
                 # Exact match or skill as complete word in requirement
-                if cv_skill == job_req or (cv_skill in job_req and len(cv_skill) > 3):
-                    matched.append(cv_skill)
+                if cv_skill_lower == job_req_lower or (cv_skill_lower in job_req_lower and len(cv_skill_lower) > 3):
+                    matched.append((cv_skill, job_req))
+                    break
+                elif job_req_lower in cv_skill_lower and len(job_req_lower) > 3:
+                    matched.append((cv_skill, job_req))
                     break
         
-        # Find missing (important job requirements not in CV)
-        missing = []
-        job_reqs_list = list(self._extract_job_requirements(job_data))
-        for req in job_reqs_list[:5]:  # Top 5 requirements
-            req_lower = req.lower()
-            found = False
-            for cv_skill in cv_skills:
-                if cv_skill == req_lower or (cv_skill in req_lower and len(cv_skill) > 3):
-                    found = True
-                    break
-            if not found:
-                missing.append(req)
-        
-        return matched[:10], missing[:5]  # Return top matches
+        return matched[:10]  # Return top matches
     
-    def _extract_relevant_experiences(self, cv_data: Dict, matched_skills: List[str]) -> List[Dict]:
+    def _extract_candidate_info(self, cv_data: Dict) -> Dict:
         """
-        Extract relevant work experiences based on matched skills.
+        Extract comprehensive candidate information from CV data.
         
         Args:
             cv_data: Parsed CV data
-            matched_skills: List of matched skills
             
         Returns:
-            List of relevant experiences
+            Dictionary with candidate information
         """
-        experiences = cv_data.get('experience', [])
-        if not experiences:
-            return []
+        raw_text = cv_data.get('raw_text', '')
         
-        # Return most recent experiences (max 3)
-        relevant = []
-        for exp in experiences[:3]:
+        # Extract experiences with more detail
+        experiences = []
+        exp_data = cv_data.get('experience', [])
+        for exp in exp_data[:5]:
             if isinstance(exp, dict):
-                relevant.append(exp)
+                title = exp.get('title', '')
+                company = exp.get('company', '')
+                responsibilities = exp.get('responsibilities', [])
+                
+                if isinstance(responsibilities, list):
+                    resp_text = '; '.join(responsibilities[:2])
+                else:
+                    resp_text = str(responsibilities)[:MAX_RESPONSIBILITY_LENGTH]
+                
+                if title and company:
+                    exp_str = f"{title} at {company}"
+                    if resp_text:
+                        exp_str += f" - {resp_text}"
+                    experiences.append(exp_str)
         
-        return relevant
+        # Extract formations/education
+        formations = []
+        edu_data = cv_data.get('education', [])
+        for edu in edu_data[:3]:
+            if isinstance(edu, dict):
+                degree = edu.get('degree', '')
+                institution = edu.get('institution', '')
+                if degree:
+                    formations.append(f"{degree}" + (f" - {institution}" if institution else ""))
+        
+        # Extract certifications from raw text or structured data
+        certifications = cv_data.get('certifications', [])
+        if isinstance(certifications, list):
+            certifications = [str(cert) for cert in certifications[:5]]
+        
+        return {
+            'name': cv_data.get('name', 'Candidate'),
+            'email': cv_data.get('email', ''),
+            'phone': cv_data.get('phone', ''),
+            'skills': self._extract_skills(cv_data),
+            'experiences': experiences,
+            'formations': formations,
+            'certifications': certifications
+        }
     
     def _normalize_text_for_pdf(self, text: str) -> str:
         """
@@ -192,102 +220,107 @@ class GroqCoverLetterService:
         Returns:
             Generated cover letter text
         """
-        # Extract candidate information
-        candidate_name = cv_data.get('name', 'Candidate')
-        candidate_email = cv_data.get('email', '')
-        candidate_phone = cv_data.get('phone', '')
+        # Extract comprehensive candidate information
+        candidate_info = self._extract_candidate_info(cv_data)
         
         # Extract job information
         job_title = job_data.get('title', 'the position')
         company = job_data.get('company') or job_data.get('organization', 'your company')
+        location = job_data.get('location', '')
         job_description = job_data.get('description', '') or job_data.get('description_text', '')
+        job_requirements = self._extract_job_requirements(job_data)
         
         # Perform skill matching
-        matched_skills, missing_skills = self._match_skills(cv_data, job_data)
-        relevant_experiences = self._extract_relevant_experiences(cv_data, matched_skills)
+        skill_matches = self._match_skills(cv_data, job_data)
         
-        # Build experience summary
-        experience_text = ""
-        for i, exp in enumerate(relevant_experiences, 1):
-            title = exp.get('title', 'Professional')
-            company_name = exp.get('company', 'a leading organization')
-            responsibilities = exp.get('responsibilities', '')
-            if isinstance(responsibilities, list):
-                responsibilities = ', '.join(responsibilities[:2])
-            experience_text += f"{i}. {title} at {company_name}"
-            if responsibilities:
-                # Truncate at word boundary for cleaner summary
-                truncated = responsibilities[:MAX_RESPONSIBILITY_LENGTH]
-                if len(responsibilities) > MAX_RESPONSIBILITY_LENGTH:
-                    truncated = truncated.rsplit(' ', 1)[0] + '...'
-                experience_text += f": {truncated}"
-            experience_text += "\n"
-        
-        # Create the prompt for Groq
-        prompt = f"""You are an expert professional cover letter writer. Generate a highly targeted, ATS-friendly cover letter based on the following information.
+        # Build the enhanced prompt with skill matching
+        prompt = f"""MISSION : Redige une lettre de motivation ULTRA-CIBLEE pour ce match job/candidat.
 
-CANDIDATE INFORMATION:
-- Name: {candidate_name}
-- Email: {candidate_email}
-- Phone: {candidate_phone}
-- Matched Skills: {', '.join(matched_skills[:8]) if matched_skills else 'General skills'}
+=== OFFRE D'EMPLOI ===
+Poste : {job_title}
+Entreprise : {company}
+Localisation : {location if location else 'Not specified'}
+Description : {job_description[:600]}
+Exigences cles :
+{chr(10).join([f"- {req}" for req in job_requirements[:7]])}
 
-RELEVANT EXPERIENCE:
-{experience_text if experience_text else 'Entry-level candidate with educational background'}
+=== PROFIL CANDIDAT : {candidate_info['name']} ===
+Contact : {candidate_info['email']} | {candidate_info['phone']}
 
-JOB INFORMATION:
-- Position: {job_title}
-- Company: {company}
-- Description: {job_description[:500]}
+Stack technique :
+{', '.join(candidate_info['skills'][:15])}
 
-SKILL MATCH ANALYSIS:
-- Matching Skills: {', '.join(matched_skills[:5]) if matched_skills else 'To be highlighted from experience'}
-- Skills to Emphasize: {', '.join(missing_skills[:3]) if missing_skills else 'Core competencies'}
+Experience professionnelle :
+{chr(10).join([f"- {exp}" for exp in candidate_info['experiences'][:5]])}
+
+Formation :
+{chr(10).join([f"- {form}" for form in candidate_info['formations'][:3]])}
+
+Certifications :
+{chr(10).join([f"- {cert}" for cert in candidate_info['certifications'][:3]])}
+
+=== COMPETENCES QUI MATCHENT ===
+{chr(10).join([f"- Candidat a '{match[0]}' => Requis '{match[1]}'" for match in skill_matches[:5]]) if skill_matches else "Identifier les transferable skills"}
+
+=== STRUCTURE OBLIGATOIRE (280 mots MAX) ===
+
+PARAGRAPHE 1 - ACCROCHE CIBLEE (3-4 lignes)
+Commence par UNE competence ou realisation concrete qui matche l'offre.
+Exemple : 'Developper des APIs RESTful avec {candidate_info['skills'][0] if candidate_info['skills'] else 'Python'} qui gerent 50K requetes/jour, c'est ce que je fais actuellement.'
+Enchaine sur pourquoi {company} et ce poste specifiquement.
+
+PARAGRAPHE 2 - PREUVES CONCRETES (5-6 lignes)
+Cite 2-3 experiences/projets qui correspondent aux exigences du poste.
+Format : [Projet/Experience] + [Technologies utilisees] + [Resultat/Impact]
+Privilegie les experiences avec les technologies matchees.
+Utilise les VRAIES experiences du candidat listees ci-dessus.
+
+PARAGRAPHE 3 - FIT & VALEUR AJOUTEE (4-5 lignes)
+Explique pourquoi tu es le bon match pour {company}.
+Mentionne la formation si pertinent pour le poste.
+Mets en avant la capacite d'apprentissage et les certifications.
+Ce que tu apportes : competences techniques + mindset professionnel.
+
+PARAGRAPHE 4 - CLOSING PRO (2 lignes)
+'Je serais ravi d'echanger sur comment mes competences peuvent contribuer a [projet/mission de l'entreprise].'
+'Disponible pour un entretien a votre convenance.'
+Termine par 'Cordialement,' UNIQUEMENT.
 
 {f"CUSTOM MESSAGE TO INCORPORATE: {custom_message}" if custom_message else ""}
 
-REQUIREMENTS:
-1. Write in a STRICT PROFESSIONAL STRUCTURE with the following sections:
-   - Header with candidate contact information
-   - Date
-   - Recipient address (Hiring Manager, {company})
-   - Professional salutation
-   - Opening paragraph: State position and express interest
-   - Body paragraph 1: Highlight CONCRETE experiences that match job requirements
-   - Body paragraph 2: Demonstrate specific skills alignment with the role
-   - Closing paragraph: Express enthusiasm and call to action
-   - Professional closing (Sincerely,)
+=== REGLES D'OR ===
+- Utilise les VRAIES experiences du candidat (pas d'invention)
+- Adapte chaque phrase au poste vise
+- Mentionne des technologies/projets concrets
+- Phrases courtes : 15-20 mots max
+- ZERO cliche : 'dynamique', 'motive', 'passionne' = INTERDIT
+- Ton professionnel mais moderne (pas guinde)
+- Pas de signature finale (juste 'Cordialement,')
+- WRITE IN ENGLISH if job description is in English, FRENCH if in French
 
-2. ENFORCE STRICT RULES:
-   - NO clichés (e.g., "I am writing to express my interest", "team player", "detail-oriented")
-   - Use ONLY concrete, measurable achievements
-   - Reference specific skills from the matched skills list
-   - Keep total length to 300-400 words
-   - Use active voice and strong action verbs
-   - Be direct and specific
-
-3. LANGUAGE: Write in professional English
-
-4. FORMAT: Use simple paragraph formatting suitable for PDF export
-
-Generate the cover letter now:"""
-
-        # Call Groq API
+GO ! Redige cette lettre maintenant."""
+        
+        # Call Groq API with enhanced prompt
         try:
             chat_completion = self.client.chat.completions.create(
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an expert cover letter writer who creates professional, ATS-friendly cover letters that highlight concrete skills and experiences. You avoid clichés and focus on measurable achievements."
+                        "content": (
+                            "Tu es un expert en recrutement tech qui redige des lettres de motivation "
+                            "sur mesure. Tu analyses le profil du candidat et l'offre d'emploi pour creer "
+                            "un pitch parfait qui met en avant les competences pertinentes. "
+                            "Style : direct, factuel, professionnel mais moderne. Zero bullshit."
+                        )
                     },
                     {
                         "role": "user",
                         "content": prompt
                     }
                 ],
-                model=self.model,
+                model="llama-3.1-8b-instant",  # Use faster model for better responsiveness
                 temperature=0.7,
-                max_tokens=2000,
+                max_tokens=900,
             )
             
             cover_letter = chat_completion.choices[0].message.content
@@ -311,11 +344,27 @@ Generate the cover letter now:"""
         Returns:
             Dictionary with skill match analysis
         """
-        matched_skills, missing_skills = self._match_skills(cv_data, job_data)
+        skill_matches = self._match_skills(cv_data, job_data)
+        
+        # Extract matched skills from tuples
+        matched_skills = [match[0] for match in skill_matches]
         
         # Calculate match percentage based on job requirements
         job_requirements = self._extract_job_requirements(job_data)
         total_requirements = len(job_requirements)
+        
+        # Find missing skills (job requirements not in matched skills)
+        missing_skills = []
+        matched_skills_lower = [s.lower() for s in matched_skills]
+        for req in job_requirements[:10]:
+            req_lower = req.lower()
+            found = False
+            for matched_skill in matched_skills_lower:
+                if matched_skill in req_lower or req_lower in matched_skill:
+                    found = True
+                    break
+            if not found:
+                missing_skills.append(req)
         
         if total_requirements > 0:
             match_percentage = (len(matched_skills) / total_requirements) * 100
@@ -325,7 +374,7 @@ Generate the cover letter now:"""
         
         return {
             'matched_skills': matched_skills,
-            'missing_skills': missing_skills,
+            'missing_skills': missing_skills[:5],  # Limit to top 5 missing
             'match_percentage': min(match_percentage, 100)  # Cap at 100%
         }
 
