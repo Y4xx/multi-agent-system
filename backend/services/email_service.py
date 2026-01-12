@@ -112,10 +112,11 @@ class EmailService:
         company: str,
         applicant_name: str,
         motivation_letter: str,
-        cv_text: Optional[str] = None
+        cv_text: Optional[str] = None,
+        include_ai_attribution: bool = False
     ) -> dict:
         """
-        Send a job application email.
+        Send a job application email with improved formatting.
         
         Args:
             recipient_email: Email of the hiring manager/HR
@@ -124,12 +125,14 @@ class EmailService:
             applicant_name: Name of the applicant
             motivation_letter: The motivation letter content
             cv_text: Optional CV text
+            include_ai_attribution: Whether to include AI attribution in footer (default: False)
             
         Returns:
             Dictionary with success status and message
         """
         subject = f"Application for {job_title} position at {company}"
         
+        # Clean body text - remove extra whitespace and format nicely
         body = f"""Dear Hiring Manager,
 
 {motivation_letter}
@@ -138,12 +141,57 @@ Best regards,
 {applicant_name}
 """
         
+        # Build footer conditionally
+        footer_content = ""
+        if include_ai_attribution:
+            footer_content = "<p>This application was generated using an AI-powered job application system.</p>"
+        
+        # Enhanced HTML body with better styling
         html_body = f"""
         <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: 'Arial', 'Helvetica', sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }}
+                    .header {{
+                        border-bottom: 2px solid #0066cc;
+                        padding-bottom: 10px;
+                        margin-bottom: 20px;
+                    }}
+                    .content {{
+                        white-space: pre-wrap;
+                        margin: 20px 0;
+                    }}
+                    .signature {{
+                        margin-top: 30px;
+                        font-weight: 500;
+                    }}
+                    .footer {{
+                        margin-top: 40px;
+                        padding-top: 20px;
+                        border-top: 1px solid #ddd;
+                        font-size: 12px;
+                        color: #666;
+                    }}
+                </style>
+            </head>
             <body>
+                <div class="header">
+                    <h2 style="color: #0066cc; margin: 0;">Application for {job_title}</h2>
+                    <p style="color: #666; margin: 5px 0 0 0;">{company}</p>
+                </div>
                 <p>Dear Hiring Manager,</p>
-                <div style="white-space: pre-wrap;">{motivation_letter}</div>
-                <p>Best regards,<br>{applicant_name}</p>
+                <div class="content">{motivation_letter}</div>
+                <div class="signature">
+                    <p>Best regards,<br>{applicant_name}</p>
+                </div>
+                {f'<div class="footer">{footer_content}</div>' if footer_content else ''}
             </body>
         </html>
         """
