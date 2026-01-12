@@ -37,36 +37,39 @@ class PDFExportService:
         """
         styles = getSampleStyleSheet()
         
-        # Custom style for contact info
-        styles.add(ParagraphStyle(
-            name='ContactInfo',
-            parent=styles['Normal'],
-            fontSize=10,
-            leading=14,
-            alignment=TA_LEFT,
-            spaceAfter=6
-        ))
+        # Only add custom styles if they don't exist
+        if 'ContactInfo' not in styles:
+            styles.add(ParagraphStyle(
+                name='ContactInfo',
+                parent=styles['Normal'],
+                fontSize=10,
+                leading=14,
+                alignment=TA_LEFT,
+                spaceAfter=6
+            ))
         
         # Custom style for body text
-        styles.add(ParagraphStyle(
-            name='BodyText',
-            parent=styles['Normal'],
-            fontSize=11,
-            leading=16,
-            alignment=TA_JUSTIFY,
-            spaceAfter=12,
-            firstLineIndent=0
-        ))
+        if 'BodyText' not in styles:
+            styles.add(ParagraphStyle(
+                name='BodyText',
+                parent=styles['Normal'],
+                fontSize=11,
+                leading=16,
+                alignment=TA_JUSTIFY,
+                spaceAfter=12,
+                firstLineIndent=0
+            ))
         
         # Custom style for salutation
-        styles.add(ParagraphStyle(
-            name='Salutation',
-            parent=styles['Normal'],
-            fontSize=11,
-            leading=14,
-            alignment=TA_LEFT,
-            spaceAfter=12
-        ))
+        if 'Salutation' not in styles:
+            styles.add(ParagraphStyle(
+                name='Salutation',
+                parent=styles['Normal'],
+                fontSize=11,
+                leading=14,
+                alignment=TA_LEFT,
+                spaceAfter=12
+            ))
         
         return styles
     
