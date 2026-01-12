@@ -293,5 +293,20 @@ Generate the cover letter now:"""
         }
 
 
-# Singleton instance
-groq_cover_letter_service = GroqCoverLetterService()
+# Singleton instance - initialized on first use
+_groq_cover_letter_service = None
+
+def get_groq_cover_letter_service():
+    """Get or create the Groq cover letter service singleton."""
+    global _groq_cover_letter_service
+    if _groq_cover_letter_service is None:
+        _groq_cover_letter_service = GroqCoverLetterService()
+    return _groq_cover_letter_service
+
+# For backward compatibility
+class _GroqServiceProxy:
+    """Proxy to lazily initialize the service."""
+    def __getattr__(self, name):
+        return getattr(get_groq_cover_letter_service(), name)
+
+groq_cover_letter_service = _GroqServiceProxy()
