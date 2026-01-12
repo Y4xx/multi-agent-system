@@ -302,3 +302,87 @@ async def get_applications():
     except Exception as e:
         print(f"Error fetching applications: {str(e)}")
         raise HTTPException(status_code=500, detail="Error fetching application history")
+
+
+# Export cover letter to PDF endpoint
+@router.post("/export-pdf")
+async def export_cover_letter_pdf(
+    cv_data: dict,
+    job_id: int,
+    cover_letter: str,
+    filename: Optional[str] = None
+):
+    """
+    Export a cover letter to PDF format.
+    
+    Args:
+        cv_data: Parsed CV data
+        job_id: Job ID
+        cover_letter: Cover letter text
+        filename: Optional custom filename
+        
+    Returns:
+        PDF file path and download information
+    """
+    try:
+        # Get job data
+        job_data = job_fetcher_agent.get_job_by_id(job_id)
+        
+        if not job_data:
+            raise HTTPException(status_code=404, detail=f"Job with ID {job_id} not found")
+        
+        # Export to PDF
+        pdf_path = job_application_crew.export_cover_letter_to_pdf(
+            cover_letter_text=cover_letter,
+            cv_data=cv_data,
+            job_data=job_data,
+            filename=filename
+        )
+        
+        return {
+            "success": True,
+            "pdf_path": pdf_path,
+            "filename": os.path.basename(pdf_path),
+            "message": "Cover letter exported to PDF successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error exporting to PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error exporting cover letter to PDF")
+
+
+# Get skill match analysis endpoint
+@router.post("/skill-match")
+async def get_skill_match(cv_data: dict, job_id: int):
+    """
+    Get detailed skill match analysis between CV and job.
+    
+    Args:
+        cv_data: Parsed CV data
+        job_id: Job ID
+        
+    Returns:
+        Skill match report with matched/missing skills
+    """
+    try:
+        # Get job data
+        job_data = job_fetcher_agent.get_job_by_id(job_id)
+        
+        if not job_data:
+            raise HTTPException(status_code=404, detail=f"Job with ID {job_id} not found")
+        
+        # Get skill match analysis
+        skill_match = job_application_crew.get_skill_match_analysis(cv_data, job_data)
+        
+        return {
+            "success": True,
+            "data": skill_match
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting skill match: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error analyzing skill match")

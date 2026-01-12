@@ -27,6 +27,10 @@ from agents.job_fetcher_agent import job_fetcher_agent as legacy_job_agent
 from agents.matching_agent import matching_agent as legacy_matching_agent
 from services.email_service import email_service
 
+# Import new Groq-powered services
+from services.groq_cover_letter_service import groq_cover_letter_service
+from services.pdf_export_service import pdf_export_service
+
 
 class JobApplicationCrew:
     """
@@ -110,7 +114,7 @@ class JobApplicationCrew:
     def generate_cover_letter(self, cv_data: Dict, job_data: Dict, 
                             custom_message: str = "") -> str:
         """
-        Generate cover letter using CrewAI LLM agent.
+        Generate cover letter using Groq LLM with skill-matching approach.
         
         Args:
             cv_data: Parsed CV data
@@ -118,34 +122,47 @@ class JobApplicationCrew:
             custom_message: Optional custom message
             
         Returns:
-            Generated cover letter in French
+            Generated cover letter (professional, ATS-friendly)
         """
-        # Create the cover letter task
-        task = create_cover_letter_task(
-            self.cover_letter_agent,
-            cv_data,
-            job_data,
-            custom_message
-        )
-        
-        # Create a crew for this specific task
-        crew = Crew(
-            agents=[self.cover_letter_agent],
-            tasks=[task],
-            process=Process.sequential,
-            verbose=True
-        )
-        
-        # Execute and get the result
-        result = crew.kickoff()
-        
-        # Extract the letter from the result
-        if hasattr(result, 'raw'):
-            return result.raw
-        elif isinstance(result, str):
-            return result
-        else:
-            return str(result)
+        # Use Groq-powered service for ultra-targeted cover letters
+        try:
+            cover_letter = groq_cover_letter_service.generate_cover_letter(
+                cv_data=cv_data,
+                job_data=job_data,
+                custom_message=custom_message
+            )
+            return cover_letter
+        except Exception as e:
+            print(f"Error generating cover letter with Groq: {str(e)}")
+            # Fallback to CrewAI if Groq fails
+            print("Falling back to CrewAI cover letter generation...")
+            
+            # Create the cover letter task
+            task = create_cover_letter_task(
+                self.cover_letter_agent,
+                cv_data,
+                job_data,
+                custom_message
+            )
+            
+            # Create a crew for this specific task
+            crew = Crew(
+                agents=[self.cover_letter_agent],
+                tasks=[task],
+                process=Process.sequential,
+                verbose=True
+            )
+            
+            # Execute and get the result
+            result = crew.kickoff()
+            
+            # Extract the letter from the result
+            if hasattr(result, 'raw'):
+                return result.raw
+            elif isinstance(result, str):
+                return result
+            else:
+                return str(result)
     
     def submit_application(self, cv_data: Dict, job_data: Dict, 
                           motivation_letter: str) -> Dict:
@@ -245,12 +262,55 @@ class JobApplicationCrew:
         # Get match explanation
         match_explanation = legacy_matching_agent.explain_match(cv_data, job_data)
         
+        # Get skill match report
+        skill_match_report = groq_cover_letter_service.get_skill_match_report(cv_data, job_data)
+        
         return {
             'success': True,
             'job_data': job_data,
             'motivation_letter': motivation_letter,
-            'match_explanation': match_explanation
+            'match_explanation': match_explanation,
+            'skill_match_report': skill_match_report
         }
+    
+    def export_cover_letter_to_pdf(
+        self,
+        cover_letter_text: str,
+        cv_data: Dict,
+        job_data: Dict,
+        filename: Optional[str] = None
+    ) -> str:
+        """
+        Export cover letter to PDF format.
+        
+        Args:
+            cover_letter_text: The cover letter content
+            cv_data: Parsed CV data
+            job_data: Job offer data
+            filename: Optional custom filename
+            
+        Returns:
+            Path to the generated PDF file
+        """
+        return pdf_export_service.export_with_metadata(
+            cover_letter_text=cover_letter_text,
+            cv_data=cv_data,
+            job_data=job_data,
+            filename=filename
+        )
+    
+    def get_skill_match_analysis(self, cv_data: Dict, job_data: Dict) -> Dict:
+        """
+        Get detailed skill match analysis for a job.
+        
+        Args:
+            cv_data: Parsed CV data
+            job_data: Job offer data
+            
+        Returns:
+            Skill match report with matched/missing skills
+        """
+        return groq_cover_letter_service.get_skill_match_report(cv_data, job_data)
 
 
 # Singleton instance

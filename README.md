@@ -48,15 +48,16 @@ The entire workflow is managed by a **CrewAI-based coordinator agent** that orch
 | **Application Agent** | Submission Specialist | Prepares and sends job applications via email |
 | **Coordinator Agent** | Workflow Manager | Orchestrates the entire workflow between agents |
 
-### 🌟 Key Feature: LLM-Powered French Cover Letters
+### 🌟 Key Feature: Groq-Powered Skill-Matching Cover Letters
 
-The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
-- ✅ Professional French business letters
-- ✅ Personalized to job requirements and candidate profile
-- ✅ ATS-optimized formatting
-- ✅ Proper French salutation and closing
-- ✅ 3-4 concise paragraphs
-- ✅ Integration of custom candidate messages
+The **Cover Letter Agent** uses Groq's ultra-fast LLM (Mixtral-8x7B) with skill-matching to generate:
+- ✅ **Skill-matching driven**: Analyzes CV skills vs. job requirements
+- ✅ **Ultra-targeted**: Highlights only concrete, relevant experiences
+- ✅ **Professional structure**: Strict format without clichés
+- ✅ **ATS-optimized**: PDF export with proper formatting
+- ✅ **PDF generation**: Modern, professional PDF documents
+- ✅ **Text normalization**: Ensures PDF compatibility
+- ✅ **Match reports**: Detailed skill analysis for each job
 
 [See example cover letter](backend/SAMPLE_COVER_LETTER.md)
 
@@ -94,6 +95,9 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
    OPENAI_API_KEY=sk-your-actual-openai-api-key
    MODEL_NAME=gpt-4o-mini
    
+   # Groq Configuration (REQUIRED for cover letter generation)
+   GROQ_API_KEY=gsk-your-actual-groq-api-key
+   
    # Email Configuration (OPTIONAL - for actual email sending)
    SMTP_SERVER=smtp.gmail.com
    SMTP_PORT=587
@@ -107,6 +111,8 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
    ```
    
    > **Get OpenAI API Key:** Visit [OpenAI Platform](https://platform.openai.com/) to create an account and generate an API key.
+   
+   > **Get Groq API Key:** Visit [Groq Console](https://console.groq.com/) to create an account and generate an API key for ultra-fast LLM inference.
    
    > **Get Google OAuth Credentials:** Visit [Google Cloud Console](https://console.cloud.google.com/) to create OAuth 2.0 credentials for Gmail API access.
 
@@ -181,8 +187,10 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 | `/upload-cv` | `POST` | Upload a CV and extract structured data. |
 | `/job-offers` | `GET` | Fetch available job/internship offers. |
 | `/match-offers` | `POST` | Return top 10 offers matched with the CV. |
-| `/generate-letter` | `POST` | Generate a personalized motivation letter. |
+| `/generate-letter` | `POST` | Generate a personalized motivation letter using Groq LLM. |
 | `/apply` | `POST` | Send email applications automatically. |
+| `/export-pdf` | `POST` | Export cover letter to PDF format. |
+| `/skill-match` | `POST` | Get detailed skill match analysis. |
 | `/job/{job_id}` | `GET` | Get specific job by ID. |
 | `/applications` | `GET` | Get application history. |
 | `/auth/google` | `GET` | Initiate Gmail OAuth 2.0 flow. |
@@ -196,12 +204,14 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 
 ### Backend Features (CrewAI-Powered)
 - ✅ **CrewAI multi-agent architecture** with specialized roles
-- ✅ **LLM-powered French cover letter generation** using OpenAI
+- ✅ **Groq LLM-powered cover letter generation** with skill-matching
+- ✅ **Skill-matching analysis** between CV and job requirements
+- ✅ **Professional PDF export** for cover letters
 - ✅ **Gmail OAuth 2.0 integration** for professional email sending
 - ✅ **Format-agnostic job data processing** supporting multiple schemas
 - ✅ CV parsing and data extraction (PDF, DOCX, TXT)
 - ✅ NLP-based job matching using text similarity
-- ✅ **Personalized, ATS-optimized cover letters** in French
+- ✅ **Ultra-targeted, ATS-optimized cover letters** with no clichés
 - ✅ Email application automation (SMTP + Gmail API)
 - ✅ RESTful API with FastAPI
 - ✅ CORS enabled for frontend integration
