@@ -2,12 +2,19 @@
 OAuth 2.0 routes for Google integration.
 """
 
+import os
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from services.google_oauth_service import google_oauth_service
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Create router
 oauth_router = APIRouter(prefix="/auth", tags=["OAuth"])
+
+# Get frontend URL from environment
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 
 
 @oauth_router.get("/google")
@@ -54,19 +61,19 @@ async def google_auth_callback(
     try:
         # Check for errors
         if error:
-            return RedirectResponse(url=f"http://localhost:5173/settings?error={error}")
+            return RedirectResponse(url=f"{FRONTEND_URL}/settings?error={error}")
         
         # Exchange code for tokens
         result = google_oauth_service.exchange_code_for_tokens(code)
         
         if result.get('success'):
-            return RedirectResponse(url="http://localhost:5173/settings?success=true")
+            return RedirectResponse(url=f"{FRONTEND_URL}/settings?success=true")
         else:
-            return RedirectResponse(url=f"http://localhost:5173/settings?error={result.get('message')}")
+            return RedirectResponse(url=f"{FRONTEND_URL}/settings?error={result.get('message')}")
             
     except Exception as e:
         print(f"Error in OAuth callback: {str(e)}")
-        return RedirectResponse(url="http://localhost:5173/settings?error=callback_failed")
+        return RedirectResponse(url=f"{FRONTEND_URL}/settings?error=callback_failed")
 
 
 @oauth_router.get("/google/status")

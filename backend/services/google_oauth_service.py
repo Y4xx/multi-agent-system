@@ -6,6 +6,7 @@ Handles OAuth flow and Gmail API authentication.
 import os
 import json
 import base64
+import logging
 from typing import Optional, Dict
 from datetime import datetime, timedelta
 from google.oauth2.credentials import Credentials
@@ -16,6 +17,9 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 
 class GoogleOAuthService:
@@ -73,7 +77,7 @@ class GoogleOAuthService:
             return auth_url
             
         except Exception as e:
-            print(f"Error generating authorization URL: {str(e)}")
+            logging.error(f"Error generating authorization URL: {str(e)}")
             return None
     
     def exchange_code_for_tokens(self, code: str) -> Dict:
@@ -118,7 +122,7 @@ class GoogleOAuthService:
                 profile = service.users().getProfile(userId='me').execute()
                 user_email = profile.get('emailAddress', '')
             except Exception as e:
-                print(f"Error fetching user profile: {str(e)}")
+                logging.warning(f"Error fetching user profile: {str(e)}")
                 user_email = ''
             
             # Save credentials
@@ -131,7 +135,7 @@ class GoogleOAuthService:
             }
             
         except Exception as e:
-            print(f"Error exchanging code for tokens: {str(e)}")
+            logging.error(f"Error exchanging code for tokens: {str(e)}")
             return {
                 'success': False,
                 'message': 'Failed to connect Gmail account'
@@ -139,7 +143,7 @@ class GoogleOAuthService:
     
     def _save_credentials(self, credentials: Credentials, user_email: str):
         """
-        Save credentials to file.
+        Save credentials to file with secure permissions.
         
         Args:
             credentials: Google OAuth credentials
@@ -162,12 +166,16 @@ class GoogleOAuthService:
                 'connected_at': datetime.now().isoformat()
             }
             
-            # Save to file
+            # Save to file with secure permissions
             with open(self.CREDENTIALS_FILE, 'w') as f:
                 json.dump(creds_data, f, indent=2)
+            
+            # Set restrictive permissions (owner read/write only)
+            os.chmod(self.CREDENTIALS_FILE, 0o600)
                 
         except Exception as e:
-            print(f"Error saving credentials: {str(e)}")
+            import logging
+            logging.error(f"Error saving credentials: {str(e)}")
     
     def get_credentials(self) -> Optional[Credentials]:
         """
@@ -200,7 +208,7 @@ class GoogleOAuthService:
             return credentials
             
         except Exception as e:
-            print(f"Error loading credentials: {str(e)}")
+            logging.error(f"Error loading credentials: {str(e)}")
             return None
     
     def get_connection_status(self) -> Dict:
@@ -228,7 +236,7 @@ class GoogleOAuthService:
             }
             
         except Exception as e:
-            print(f"Error checking connection status: {str(e)}")
+            logging.error(f"Error checking connection status: {str(e)}")
             return {
                 'connected': False,
                 'message': 'Error checking connection status'
@@ -251,7 +259,7 @@ class GoogleOAuthService:
             }
             
         except Exception as e:
-            print(f"Error disconnecting: {str(e)}")
+            logging.error(f"Error disconnecting: {str(e)}")
             return {
                 'success': False,
                 'message': 'Error disconnecting Gmail account'
@@ -307,13 +315,13 @@ class GoogleOAuthService:
             }
             
         except HttpError as e:
-            print(f"Gmail API error: {str(e)}")
+            logging.error(f"Gmail API error: {str(e)}")
             return {
                 'success': False,
                 'message': 'Failed to send email via Gmail API'
             }
         except Exception as e:
-            print(f"Error sending email: {str(e)}")
+            logging.error(f"Error sending email: {str(e)}")
             return {
                 'success': False,
                 'message': 'Error sending email'

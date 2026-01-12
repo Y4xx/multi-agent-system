@@ -278,7 +278,8 @@ def get_job_field(job_data: Dict, field_name: str) -> str:
         if value:
             # Handle list values (e.g., locations_derived)
             if isinstance(value, list):
-                return ', '.join(str(v) for v in value)
+                # Filter out None values
+                return ', '.join(str(v) for v in value if v is not None)
             return str(value)
     
     return ''
