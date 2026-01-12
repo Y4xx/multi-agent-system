@@ -99,9 +99,16 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
    SMTP_PORT=587
    SENDER_EMAIL=your-email@gmail.com
    SENDER_PASSWORD=your-app-password
+   
+   # Google OAuth 2.0 Configuration (OPTIONAL - for Gmail API integration)
+   GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
    ```
    
    > **Get OpenAI API Key:** Visit [OpenAI Platform](https://platform.openai.com/) to create an account and generate an API key.
+   
+   > **Get Google OAuth Credentials:** Visit [Google Cloud Console](https://console.cloud.google.com/) to create OAuth 2.0 credentials for Gmail API access.
 
 4. **Start the backend server:**
    ```bash
@@ -144,16 +151,24 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
    - View the top 10 jobs matched to your CV
    - Each job shows a match score indicating compatibility
    - Jobs are sorted by match score (highest first)
+   - Jobs support both old and new data formats seamlessly
 
-3. **Generate Motivation Letter**
+3. **Configure Gmail Integration (Optional)**
+   - Navigate to Settings page
+   - Click "Connect Gmail Account"
+   - Authorize the application to send emails on your behalf
+   - Once connected, applications will be sent from your Gmail address
+
+4. **Generate Motivation Letter**
    - Click "Generate Letter" on any job card
    - Review and edit the AI-generated motivation letter
    - The letter is personalized based on your CV and the job requirements
 
-4. **Send Application**
+5. **Send Application**
    - Review the generated letter in the preview modal
    - Make any final edits if needed
    - Click "Send Application" to submit your application
+   - If Gmail is connected, the email will be sent from your account
    - Receive confirmation notification
 
 ---
@@ -170,6 +185,10 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 | `/apply` | `POST` | Send email applications automatically. |
 | `/job/{job_id}` | `GET` | Get specific job by ID. |
 | `/applications` | `GET` | Get application history. |
+| `/auth/google` | `GET` | Initiate Gmail OAuth 2.0 flow. |
+| `/auth/google/callback` | `GET` | Handle OAuth callback. |
+| `/auth/google/status` | `GET` | Check Gmail connection status. |
+| `/auth/google/disconnect` | `POST` | Disconnect Gmail account. |
 
 ---
 
@@ -178,10 +197,12 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 ### Backend Features (CrewAI-Powered)
 - ✅ **CrewAI multi-agent architecture** with specialized roles
 - ✅ **LLM-powered French cover letter generation** using OpenAI
+- ✅ **Gmail OAuth 2.0 integration** for professional email sending
+- ✅ **Format-agnostic job data processing** supporting multiple schemas
 - ✅ CV parsing and data extraction (PDF, DOCX, TXT)
 - ✅ NLP-based job matching using text similarity
 - ✅ **Personalized, ATS-optimized cover letters** in French
-- ✅ Email application automation (with simulation mode)
+- ✅ Email application automation (SMTP + Gmail API)
 - ✅ RESTful API with FastAPI
 - ✅ CORS enabled for frontend integration
 - ✅ Comprehensive error handling
@@ -189,11 +210,13 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 
 ### Frontend Features
 - ✅ Modern React + TypeScript application
+- ✅ **Settings page with Gmail OAuth integration**
 - ✅ Responsive design with Tailwind CSS
 - ✅ Beautiful UI components (Shadcn/UI inspired)
 - ✅ Real-time notifications
 - ✅ CV upload with file validation
 - ✅ Interactive job cards with match scores
+- ✅ **Support for multiple job data formats**
 - ✅ Letter preview and editing
 - ✅ Application status tracking
 
@@ -201,28 +224,51 @@ The **Cover Letter Agent** uses OpenAI's LLM (gpt-4o-mini) to generate:
 
 ## 📊 Sample Data
 
-The system includes 15 sample job offers in `backend/data/job_offers.json` covering:
+The system includes 18 sample job offers in `backend/data/job_offers.json` covering:
 - Full-time positions (Python, React, ML, DevOps, etc.)
 - Internships (Full-stack, AI/ML Research, Software Engineering)
 - Various locations across France
 - Different experience levels
+- **Multiple data formats** (old and new schemas)
+
+**Old Format Fields:** `title`, `company`, `location`, `type`, `description`, `requirements`
+
+**New Format Fields:** `title`, `organization`, `locations_derived`, `remote_derived`, `employment_type`, `seniority`, `description_text`
+
+The system seamlessly handles both formats, ensuring compatibility with any job data source.
 
 ---
 
 ## 🔒 Email Configuration
 
-By default, the system simulates email sending. To enable actual email sending:
+The system supports **two email methods**:
 
-1. Create a `.env` file in the backend directory
-2. Add your SMTP credentials:
-   ```
-   SMTP_SERVER=smtp.gmail.com
-   SMTP_PORT=587
-   SENDER_EMAIL=your-email@gmail.com
-   SENDER_PASSWORD=your-app-password
-   ```
+### 1. Gmail OAuth 2.0 (Recommended)
+Connect your Gmail account through the Settings page for:
+- ✅ Professional appearance (emails from your address)
+- ✅ Better deliverability
+- ✅ Emails appear in your Sent folder
+- ✅ Secure OAuth 2.0 authentication
+
+**Setup:**
+1. Create OAuth credentials in [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable Gmail API
+3. Add credentials to `.env` file
+4. Navigate to Settings in the app and click "Connect Gmail Account"
+
+### 2. SMTP (Alternative)
+Use traditional SMTP for email sending:
+
+```env
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SENDER_EMAIL=your-email@gmail.com
+SENDER_PASSWORD=your-app-password
+```
 
 **Note:** For Gmail, you need to use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password.
+
+If neither is configured, the system will **simulate** email sending for testing purposes.
 
 ---
 
