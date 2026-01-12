@@ -12,6 +12,9 @@ from groq import Groq
 # Load environment variables
 load_dotenv()
 
+# Constants
+MAX_RESPONSIBILITY_LENGTH = 100  # Maximum characters for experience descriptions
+
 
 class GroqCoverLetterService:
     """
@@ -76,18 +79,21 @@ class GroqCoverLetterService:
         cv_skills = set(skill.lower() for skill in self._extract_skills(cv_data))
         job_requirements = set(req.lower() for req in self._extract_job_requirements(job_data))
         
-        # Extract keywords from job description
+        # Extract potential skill keywords from job description (more conservative)
         description = job_data.get('description', '') or job_data.get('description_text', '')
         if description:
-            # Extract potential skill keywords (words longer than 3 chars)
-            words = re.findall(r'\b[a-zA-Z]{4,}\b', description.lower())
-            job_requirements.update(words)
+            # Extract technical-sounding keywords (longer words, some patterns)
+            import re
+            # Look for capitalized words, tech terms, or words with numbers/special chars
+            tech_words = re.findall(r'\b[A-Z][a-z]*(?:[A-Z][a-z]*)*\b|[a-z]+\+\+|[a-z]+\.js|[a-z]+[0-9]', description)
+            job_requirements.update([w.lower() for w in tech_words if len(w) > 3])
         
-        # Find matches
+        # Find matches using word boundary matching to avoid false positives
         matched = []
         for cv_skill in cv_skills:
             for job_req in job_requirements:
-                if cv_skill in job_req or job_req in cv_skill:
+                # Exact match or skill as complete word in requirement
+                if cv_skill == job_req or (cv_skill in job_req and len(cv_skill) > 3):
                     matched.append(cv_skill)
                     break
         
@@ -98,7 +104,7 @@ class GroqCoverLetterService:
             req_lower = req.lower()
             found = False
             for cv_skill in cv_skills:
-                if cv_skill in req_lower or req_lower in cv_skill:
+                if cv_skill == req_lower or (cv_skill in req_lower and len(cv_skill) > 3):
                     found = True
                     break
             if not found:
@@ -132,7 +138,7 @@ class GroqCoverLetterService:
     def _normalize_text_for_pdf(self, text: str) -> str:
         """
         Normalize text for PDF compatibility.
-        Removes problematic characters and ensures proper encoding.
+        Replaces problematic characters with ASCII equivalents.
         
         Args:
             text: Input text
@@ -147,7 +153,26 @@ class GroqCoverLetterService:
         # Replace em/en dashes with regular dashes
         text = text.replace('—', '-').replace('–', '-')
         
-        # Remove other problematic Unicode characters
+        # Replace common accented characters with ASCII equivalents
+        replacements = {
+            'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+            'à': 'a', 'â': 'a', 'ä': 'a',
+            'ô': 'o', 'ö': 'o',
+            'ù': 'u', 'û': 'u', 'ü': 'u',
+            'î': 'i', 'ï': 'i',
+            'ç': 'c',
+            'É': 'E', 'È': 'E', 'Ê': 'E', 'Ë': 'E',
+            'À': 'A', 'Â': 'A', 'Ä': 'A',
+            'Ô': 'O', 'Ö': 'O',
+            'Ù': 'U', 'Û': 'U', 'Ü': 'U',
+            'Î': 'I', 'Ï': 'I',
+            'Ç': 'C',
+        }
+        
+        for char, replacement in replacements.items():
+            text = text.replace(char, replacement)
+        
+        # Remove any remaining non-ASCII (last resort)
         text = text.encode('ascii', 'ignore').decode('ascii')
         
         return text
@@ -193,7 +218,11 @@ class GroqCoverLetterService:
                 responsibilities = ', '.join(responsibilities[:2])
             experience_text += f"{i}. {title} at {company_name}"
             if responsibilities:
-                experience_text += f": {responsibilities[:100]}"
+                # Truncate at word boundary for cleaner summary
+                truncated = responsibilities[:MAX_RESPONSIBILITY_LENGTH]
+                if len(responsibilities) > MAX_RESPONSIBILITY_LENGTH:
+                    truncated = truncated.rsplit(' ', 1)[0] + '...'
+                experience_text += f": {truncated}"
             experience_text += "\n"
         
         # Create the prompt for Groq
@@ -286,10 +315,20 @@ Generate the cover letter now:"""
         """
         matched_skills, missing_skills = self._match_skills(cv_data, job_data)
         
+        # Calculate match percentage based on job requirements
+        job_requirements = self._extract_job_requirements(job_data)
+        total_requirements = len(job_requirements)
+        
+        if total_requirements > 0:
+            match_percentage = (len(matched_skills) / total_requirements) * 100
+        else:
+            # If no specific requirements, use a heuristic
+            match_percentage = (len(matched_skills) / max(len(matched_skills) + len(missing_skills), 1)) * 100
+        
         return {
             'matched_skills': matched_skills,
             'missing_skills': missing_skills,
-            'match_percentage': (len(matched_skills) / max(len(matched_skills) + len(missing_skills), 1)) * 100
+            'match_percentage': min(match_percentage, 100)  # Cap at 100%
         }
 
 
