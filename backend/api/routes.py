@@ -162,6 +162,14 @@ async def generate_letter(request: GenerateLetterRequest):
         Generated motivation letter and match information
     """
     try:
+        # Validate request data
+        if not request.cv_data:
+            raise HTTPException(status_code=400, detail="CV data is required")
+        
+        # Add logging
+        print(f"Generating letter for job_id: {request.job_id}")
+        print(f"CV data contains: {list(request.cv_data.keys())}")
+        
         package = job_application_crew.generate_application_package(
             cv_data=request.cv_data,
             job_id=request.job_id,
@@ -169,18 +177,23 @@ async def generate_letter(request: GenerateLetterRequest):
         )
         
         if not package.get('success'):
-            raise HTTPException(status_code=404, detail=package.get('message'))
+            error_msg = package.get('message', 'Unknown error occurred')
+            print(f"Package generation failed: {error_msg}")
+            raise HTTPException(status_code=404, detail=error_msg)
         
         return {
             "success": True,
             "data": package
         }
         
-    except HTTPException:
+    except HTTPException: 
         raise
     except Exception as e:
-        print(f"Error generating letter: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error generating motivation letter")
+        error_detail = f"Error generating motivation letter: {str(e)}"
+        print(error_detail)
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=error_detail)
 
 
 # Apply to job endpoint

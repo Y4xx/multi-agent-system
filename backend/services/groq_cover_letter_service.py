@@ -24,13 +24,24 @@ class GroqCoverLetterService:
     def __init__(self):
         """Initialize Groq client with API key."""
         api_key = os.getenv('GROQ_API_KEY')
-        if not api_key:
-            raise ValueError(
-                "GROQ_API_KEY not found in environment variables. "
-                "Please set it in your .env file."
-            )
-        self.client = Groq(api_key=api_key)
-        self.model = "mixtral-8x7b-32768"  # High-quality model with large context
+        if not api_key: 
+            print("WARNING: GROQ_API_KEY not found. Cover letter generation will use fallback method.")
+            self.client = None
+            self.model = None
+            return
+        
+        try:
+            self.client = Groq(api_key=api_key)
+            self.model = os.getenv('GROQ_MODEL', 'mixtral-8x7b-32768')
+            print(f"✓ Groq service initialized successfully with model: {self.model}")
+        except Exception as e: 
+            print(f"ERROR initializing Groq client: {str(e)}")
+            self.client = None
+            self.model = None
+    
+    def is_available(self) -> bool:
+        """Check if Groq service is properly configured and available."""
+        return self.client is not None and self.model is not None
     
     def _extract_skills(self, cv_data: Dict) -> List[str]:
         """
@@ -220,6 +231,10 @@ class GroqCoverLetterService:
         Returns:
             Generated cover letter text
         """
+        # Check if service is available
+        if not self.is_available():
+            raise Exception("Groq service is not available. Please check GROQ_API_KEY configuration.")
+        
         # Extract comprehensive candidate information
         candidate_info = self._extract_candidate_info(cv_data)
         

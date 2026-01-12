@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from api.routes import router
 from api.oauth_routes import oauth_router
+from services.config_validator import print_config_status
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +28,11 @@ app.add_middleware(
 # Include API routes
 app.include_router(router)
 app.include_router(oauth_router)
+
+@app.on_event("startup")
+async def startup_event():
+    """Run configuration validation on startup."""
+    print_config_status()
 
 # Health check endpoint
 @app.get("/")
