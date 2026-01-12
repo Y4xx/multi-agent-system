@@ -112,7 +112,8 @@ class EmailService:
         company: str,
         applicant_name: str,
         motivation_letter: str,
-        cv_text: Optional[str] = None
+        cv_text: Optional[str] = None,
+        include_ai_attribution: bool = False
     ) -> dict:
         """
         Send a job application email with improved formatting.
@@ -124,6 +125,7 @@ class EmailService:
             applicant_name: Name of the applicant
             motivation_letter: The motivation letter content
             cv_text: Optional CV text
+            include_ai_attribution: Whether to include AI attribution in footer (default: False)
             
         Returns:
             Dictionary with success status and message
@@ -138,6 +140,11 @@ class EmailService:
 Best regards,
 {applicant_name}
 """
+        
+        # Build footer conditionally
+        footer_content = ""
+        if include_ai_attribution:
+            footer_content = "<p>This application was generated using an AI-powered job application system.</p>"
         
         # Enhanced HTML body with better styling
         html_body = f"""
@@ -184,9 +191,7 @@ Best regards,
                 <div class="signature">
                     <p>Best regards,<br>{applicant_name}</p>
                 </div>
-                <div class="footer">
-                    <p>This application was generated using an AI-powered job application system.</p>
-                </div>
+                {f'<div class="footer">{footer_content}</div>' if footer_content else ''}
             </body>
         </html>
         """

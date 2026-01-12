@@ -233,8 +233,12 @@ class GroqCoverLetterService:
         # Perform skill matching
         skill_matches = self._match_skills(cv_data, job_data)
         
+        # Detect language from job description
+        is_french = any(word in job_description.lower() for word in ['développement', 'expérience', 'équipe', 'nous recherchons'])
+        
         # Build the enhanced prompt with skill matching
-        prompt = f"""MISSION : Redige une lettre de motivation ULTRA-CIBLEE pour ce match job/candidat.
+        if is_french:
+            prompt = f"""MISSION : Redige une lettre de motivation ULTRA-CIBLEE pour ce match job/candidat.
 
 === OFFRE D'EMPLOI ===
 Poste : {job_title}
@@ -296,9 +300,88 @@ Termine par 'Cordialement,' UNIQUEMENT.
 - ZERO cliche : 'dynamique', 'motive', 'passionne' = INTERDIT
 - Ton professionnel mais moderne (pas guinde)
 - Pas de signature finale (juste 'Cordialement,')
-- WRITE IN ENGLISH if job description is in English, FRENCH if in French
 
 GO ! Redige cette lettre maintenant."""
+            
+            system_message = (
+                "Tu es un expert en recrutement tech qui redige des lettres de motivation "
+                "sur mesure. Tu analyses le profil du candidat et l'offre d'emploi pour creer "
+                "un pitch parfait qui met en avant les competences pertinentes. "
+                "Style : direct, factuel, professionnel mais moderne. Zero bullshit."
+            )
+        else:
+            # English prompt
+            prompt = f"""MISSION: Write an ULTRA-TARGETED cover letter for this job/candidate match.
+
+=== JOB OFFER ===
+Position: {job_title}
+Company: {company}
+Location: {location if location else 'Not specified'}
+Description: {job_description[:600]}
+Key Requirements:
+{chr(10).join([f"- {req}" for req in job_requirements[:7]])}
+
+=== CANDIDATE PROFILE: {candidate_info['name']} ===
+Contact: {candidate_info['email']} | {candidate_info['phone']}
+
+Technical Stack:
+{', '.join(candidate_info['skills'][:15])}
+
+Professional Experience:
+{chr(10).join([f"- {exp}" for exp in candidate_info['experiences'][:5]])}
+
+Education:
+{chr(10).join([f"- {form}" for form in candidate_info['formations'][:3]])}
+
+Certifications:
+{chr(10).join([f"- {cert}" for cert in candidate_info['certifications'][:3]])}
+
+=== MATCHING SKILLS ===
+{chr(10).join([f"- Candidate has '{match[0]}' => Required '{match[1]}'" for match in skill_matches[:5]]) if skill_matches else "Identify transferable skills"}
+
+=== MANDATORY STRUCTURE (280 words MAX) ===
+
+PARAGRAPH 1 - TARGETED HOOK (3-4 lines)
+Start with ONE concrete skill or achievement matching the offer.
+Example: 'Building RESTful APIs with {candidate_info['skills'][0] if candidate_info['skills'] else 'Python'} handling 50K requests/day is what I do currently.'
+Connect to why {company} and this specific position.
+
+PARAGRAPH 2 - CONCRETE PROOF (5-6 lines)
+Cite 2-3 experiences/projects matching job requirements.
+Format: [Project/Experience] + [Technologies used] + [Result/Impact]
+Prioritize experiences with matched technologies.
+Use REAL candidate experiences listed above.
+
+PARAGRAPH 3 - FIT & VALUE ADD (4-5 lines)
+Explain why you're the right match for {company}.
+Mention education if relevant for the position.
+Highlight learning capacity and certifications.
+What you bring: technical skills + professional mindset.
+
+PARAGRAPH 4 - PROFESSIONAL CLOSING (2 lines)
+'I would be delighted to discuss how my skills can contribute to [company project/mission].'
+'Available for an interview at your convenience.'
+End with 'Sincerely,' ONLY.
+
+{f"CUSTOM MESSAGE TO INCORPORATE: {custom_message}" if custom_message else ""}
+
+=== GOLDEN RULES ===
+- Use REAL candidate experiences (no invention)
+- Adapt each sentence to target position
+- Mention concrete technologies/projects
+- Short sentences: 15-20 words max
+- ZERO cliches: 'dynamic', 'motivated', 'passionate' = FORBIDDEN
+- Professional but modern tone (not stiff)
+- No final signature (just 'Sincerely,')
+
+GO! Write this letter now."""
+            
+            system_message = (
+                "You are a tech recruitment expert who writes tailored cover letters. "
+                "You analyze the candidate's profile and job offer to create "
+                "a perfect pitch highlighting relevant skills. "
+                "Style: direct, factual, professional but modern. No bullshit."
+            )
         
         # Call Groq API with enhanced prompt
         try:
@@ -306,19 +389,14 @@ GO ! Redige cette lettre maintenant."""
                 messages=[
                     {
                         "role": "system",
-                        "content": (
-                            "Tu es un expert en recrutement tech qui redige des lettres de motivation "
-                            "sur mesure. Tu analyses le profil du candidat et l'offre d'emploi pour creer "
-                            "un pitch parfait qui met en avant les competences pertinentes. "
-                            "Style : direct, factuel, professionnel mais moderne. Zero bullshit."
-                        )
+                        "content": system_message
                     },
                     {
                         "role": "user",
                         "content": prompt
                     }
                 ],
-                model="llama-3.1-8b-instant",  # Use faster model for better responsiveness
+                model=self.model,  # Use configured model instead of hardcoding
                 temperature=0.7,
                 max_tokens=900,
             )
