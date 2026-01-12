@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Briefcase, Sparkles } from 'lucide-react';
+import { Briefcase, Sparkles, Settings as SettingsIcon } from 'lucide-react';
 import { UploadCV } from './components/UploadCV';
 import { OffersList } from './components/OffersList';
 import { LetterPreview } from './components/LetterPreview';
 import { ApplicationStatus, type Notification, type NotificationType } from './components/ApplicationStatus';
+import { Settings } from './components/Settings';
 import { Button } from './components/ui/Button';
 import {
   type CVData,
@@ -13,7 +14,10 @@ import {
   submitApplication,
 } from './api/apiClient';
 
+type Page = 'home' | 'settings';
+
 function App() {
+  const [currentPage, setCurrentPage] = useState<Page>('home');
   const [cvData, setCvData] = useState<CVData | null>(null);
   const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -139,7 +143,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
-      <header className="bg-white  shadow-sm">
+      <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -153,41 +157,54 @@ function App() {
                 </p>
               </div>
             </div>
-            {cvData && (
-              <Button onClick={() => handleFindMatches()} disabled={loading}>
-                <Sparkles className="h-4 w-4 mr-2" />
-                {loading ? 'Finding Matches...' : 'Refresh Matches'}
+            <div className="flex items-center gap-3">
+              {cvData && currentPage === 'home' && (
+                <Button onClick={() => handleFindMatches()} disabled={loading}>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  {loading ? 'Finding Matches...' : 'Refresh Matches'}
+                </Button>
+              )}
+              <Button 
+                variant={currentPage === 'settings' ? 'default' : 'outline'}
+                onClick={() => setCurrentPage(currentPage === 'settings' ? 'home' : 'settings')}
+              >
+                <SettingsIcon className="h-4 w-4 mr-2" />
+                {currentPage === 'settings' ? 'Back to Home' : 'Settings'}
               </Button>
-            )}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="space-y-8">
-          {/* CV Upload Section */}
-          <UploadCV onCVUploaded={handleCVUploaded} />
+        {currentPage === 'settings' ? (
+          <Settings />
+        ) : (
+          <div className="space-y-8">
+            {/* CV Upload Section */}
+            <UploadCV onCVUploaded={handleCVUploaded} />
 
-          {/* Job Offers Section */}
-          {cvData && (
-            <div>
-              <OffersList
-                offers={jobOffers}
-                onSelectOffer={handleSelectOffer}
-              />
-            </div>
-          )}
+            {/* Job Offers Section */}
+            {cvData && (
+              <div>
+                <OffersList
+                  offers={jobOffers}
+                  onSelectOffer={handleSelectOffer}
+                />
+              </div>
+            )}
 
-          {/* Empty State */}
-          {!cvData && (
-            <div className="text-center py-12 text-muted-foreground">
-              <Briefcase className="h-16 w-16 mx-auto mb-4 opacity-30" />
-              <h2 className="text-xl font-semibold mb-2">Get Started</h2>
-              <p>Upload your CV to discover perfect job opportunities matched to your skills.</p>
-            </div>
-          )}
-        </div>
+            {/* Empty State */}
+            {!cvData && (
+              <div className="text-center py-12 text-muted-foreground">
+                <Briefcase className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                <h2 className="text-xl font-semibold mb-2">Get Started</h2>
+                <p>Upload your CV to discover perfect job opportunities matched to your skills.</p>
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Letter Preview Modal */}

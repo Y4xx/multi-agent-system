@@ -1,9 +1,11 @@
 from typing import Dict
 from datetime import datetime
+from services.utils import get_job_field
 
 class MotivationAgent:
     """
     Agent responsible for generating personalized motivation letters.
+    Format-agnostic: works with both old and new job data formats.
     """
     
     def __init__(self):
@@ -20,17 +22,17 @@ class MotivationAgent:
         
         Args:
             cv_data: Parsed CV data
-            job_data: Job offer data
+            job_data: Job offer data (supports both old and new formats)
             custom_message: Optional custom message from user
             
         Returns:
             Generated motivation letter text
         """
-        # Extract relevant information
+        # Extract relevant information using format-agnostic helpers
         applicant_name = cv_data.get('name', 'Applicant')
-        job_title = job_data.get('title', 'the position')
-        company = job_data.get('company', 'your company')
-        job_description = job_data.get('description', '')
+        job_title = get_job_field(job_data, 'title') or 'the position'
+        company = get_job_field(job_data, 'company') or 'your company'
+        job_description = get_job_field(job_data, 'description')
         requirements = job_data.get('requirements', [])
         
         # Extract applicant's skills and experience
@@ -181,8 +183,8 @@ class MotivationAgent:
             Short pitch text
         """
         applicant_name = cv_data.get('name', 'Applicant')
-        job_title = job_data.get('title', 'this position')
-        company = job_data.get('company', 'your company')
+        job_title = get_job_field(job_data, 'title') or 'this position'
+        company = get_job_field(job_data, 'company') or 'your company'
         skills = cv_data.get('skills', [])[:3]
         
         skills_text = ", ".join(skills) if skills else "relevant skills"

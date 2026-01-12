@@ -66,7 +66,7 @@ export function OffersList({ offers, onSelectOffer }: OffersListProps) {
                 <div className="flex-1">
                   <CardTitle className="text-xl">{offer.title}</CardTitle>
                   <CardDescription className="text-base font-semibold text-foreground mt-1">
-                    {offer.company}
+                    {offer.company || offer.organization}
                   </CardDescription>
                 </div>
                 {offer.match_score !== undefined && (
@@ -83,24 +83,36 @@ export function OffersList({ offers, onSelectOffer }: OffersListProps) {
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {offer.location}
+                  {offer.location || (Array.isArray(offer.locations_derived) 
+                    ? offer.locations_derived.join(', ') 
+                    : offer.locations_derived) || 'Location not specified'}
                 </div>
                 <div className="flex items-center gap-1">
                   <Briefcase className="h-4 w-4" />
-                  {offer.type}
+                  {offer.type || offer.employment_type || 'Type not specified'}
                 </div>
-                <div className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4" />
-                  {offer.salary}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  Posted: {new Date(offer.posted_date).toLocaleDateString()}
-                </div>
+                {offer.remote_derived && (
+                  <Badge variant="outline" className="text-xs">{offer.remote_derived}</Badge>
+                )}
+                {offer.seniority && (
+                  <Badge variant="outline" className="text-xs">{offer.seniority}</Badge>
+                )}
+                {offer.salary && (
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="h-4 w-4" />
+                    {offer.salary}
+                  </div>
+                )}
+                {offer.posted_date && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    Posted: {new Date(offer.posted_date).toLocaleDateString()}
+                  </div>
+                )}
               </div>
 
               <p className="text-sm text-muted-foreground line-clamp-2">
-                {offer.description}
+                {offer.description || offer.description_text}
               </p>
 
               {offer.requirements && offer.requirements.length > 0 && (

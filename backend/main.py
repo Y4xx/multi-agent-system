@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from api.routes import router
+from api.oauth_routes import oauth_router
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +26,7 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router)
+app.include_router(oauth_router)
 
 # Health check endpoint
 @app.get("/")

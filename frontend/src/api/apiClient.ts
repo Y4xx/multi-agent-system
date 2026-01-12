@@ -23,13 +23,22 @@ export interface CVData {
 export interface JobOffer {
   id: number;
   title: string;
-  company: string;
-  location: string;
-  type: string;
-  description: string;
-  requirements: string[];
-  salary: string;
-  posted_date: string;
+  // Old format fields
+  company?: string;
+  location?: string;
+  type?: string;
+  description?: string;
+  // New format fields
+  organization?: string;
+  locations_derived?: string[] | string;
+  remote_derived?: string;
+  employment_type?: string;
+  description_text?: string;
+  seniority?: string;
+  // Common fields
+  requirements?: string[];
+  salary?: string;
+  posted_date?: string;
   application_email: string;
   match_score?: number;
   similarity_score?: number;
@@ -141,6 +150,28 @@ export const getJob = async (jobId: number) => {
 // Get application history
 export const getApplicationHistory = async () => {
   const response = await apiClient.get('/applications');
+  return response.data;
+};
+
+// OAuth API calls
+export interface OAuthStatus {
+  connected: boolean;
+  email?: string;
+  connected_at?: string;
+  message: string;
+}
+
+export const getGoogleAuthStatus = async (): Promise<{ success: boolean; data: OAuthStatus }> => {
+  const response = await apiClient.get('/auth/google/status');
+  return response.data;
+};
+
+export const initiateGoogleAuth = (): void => {
+  window.location.href = `${API_BASE_URL}/auth/google`;
+};
+
+export const disconnectGoogleAuth = async (): Promise<{ success: boolean; message: string }> => {
+  const response = await apiClient.post('/auth/google/disconnect');
   return response.data;
 };
 

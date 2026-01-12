@@ -14,3 +14,4 @@ dist/
 *.sqlite
 .DS_Store
 uploads/
+data/gmail_credentials.json
