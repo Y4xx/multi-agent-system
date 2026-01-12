@@ -82,8 +82,6 @@ class GroqCoverLetterService:
         # Extract potential skill keywords from job description (more conservative)
         description = job_data.get('description', '') or job_data.get('description_text', '')
         if description:
-            # Extract technical-sounding keywords (longer words, some patterns)
-            import re
             # Look for capitalized words, tech terms, or words with numbers/special chars
             tech_words = re.findall(r'\b[A-Z][a-z]*(?:[A-Z][a-z]*)*\b|[a-z]+\+\+|[a-z]+\.js|[a-z]+[0-9]', description)
             job_requirements.update([w.lower() for w in tech_words if len(w) > 3])
