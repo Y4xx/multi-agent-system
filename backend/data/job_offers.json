@@ -268,5 +268,38 @@
     "salary": "32000-42000 DH",
     "posted_date": "2025-01-22",
     "application_email": "junior@webdevacademy.fr"
+  },
+  {
+    "id": 16,
+    "title": "Cloud Solutions Architect",
+    "organization": "TechCloud Innovations",
+    "locations_derived": ["Paris", "Remote"],
+    "remote_derived": "Hybrid",
+    "employment_type": "Full-time",
+    "seniority": "Senior",
+    "description_text": "We are looking for an experienced Cloud Solutions Architect to design and implement scalable cloud infrastructure. You will work with cutting-edge technologies including AWS, Azure, and Google Cloud Platform to deliver enterprise-grade solutions.",
+    "application_email": "careers@techcloud.fr"
+  },
+  {
+    "id": 17,
+    "title": "Data Engineer",
+    "organization": "DataFlow Systems",
+    "locations_derived": ["Lyon", "Marseille"],
+    "remote_derived": "On-site",
+    "employment_type": "Full-time",
+    "seniority": "Mid-level",
+    "description_text": "Join our data engineering team to build robust data pipelines and ETL processes. Experience with Python, SQL, Apache Spark, and modern data warehousing solutions is essential.",
+    "application_email": "hr@dataflow-systems.com"
+  },
+  {
+    "id": 18,
+    "title": "Junior Frontend Developer",
+    "organization": "WebCraft Studio",
+    "locations_derived": ["Toulouse"],
+    "remote_derived": "Remote",
+    "employment_type": "Full-time",
+    "seniority": "Junior",
+    "description_text": "Entry-level position for a passionate frontend developer. You will work with React, TypeScript, and modern CSS frameworks to build beautiful user interfaces. Great mentorship and learning opportunities.",
+    "application_email": "jobs@webcraft.fr"
   }
 ]

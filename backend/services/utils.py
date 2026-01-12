@@ -179,6 +179,11 @@ def create_cv_summary(cv_data: Dict) -> str:
 def create_job_summary(job_data: Dict) -> str:
     """
     Create a text summary of job offer data.
+    Format-agnostic: supports both old and new job data formats.
+    
+    Old format: title, company, location, type, description, requirements
+    New format: title, organization, description_text, employment_type, 
+                locations_derived, remote_derived, seniority
     
     Args:
         job_data: Job offer data
@@ -188,15 +193,92 @@ def create_job_summary(job_data: Dict) -> str:
     """
     parts = []
     
-    parts.append(f"Position: {job_data.get('title', '')}")
-    parts.append(f"Company: {job_data.get('company', '')}")
-    parts.append(f"Location: {job_data.get('location', '')}")
-    parts.append(f"Type: {job_data.get('type', '')}")
-    parts.append(f"Description: {job_data.get('description', '')}")
+    # Title (both formats use 'title')
+    title = job_data.get('title', '')
+    if title:
+        parts.append(f"Position: {title}")
     
+    # Company/Organization (old: company, new: organization)
+    company = job_data.get('company') or job_data.get('organization', '')
+    if company:
+        parts.append(f"Company: {company}")
+    
+    # Location (old: location, new: locations_derived)
+    location = job_data.get('location')
+    if not location and job_data.get('locations_derived'):
+        # locations_derived might be a list or string
+        locations = job_data['locations_derived']
+        if isinstance(locations, list):
+            location = ', '.join(str(loc) for loc in locations)
+        else:
+            location = str(locations)
+    if location:
+        parts.append(f"Location: {location}")
+    
+    # Remote work (new format only)
+    if job_data.get('remote_derived'):
+        parts.append(f"Remote: {job_data['remote_derived']}")
+    
+    # Type (old: type, new: employment_type)
+    job_type = job_data.get('type') or job_data.get('employment_type', '')
+    if job_type:
+        parts.append(f"Type: {job_type}")
+    
+    # Seniority (new format only)
+    if job_data.get('seniority'):
+        parts.append(f"Seniority: {job_data['seniority']}")
+    
+    # Description (old: description, new: description_text)
+    description = job_data.get('description') or job_data.get('description_text', '')
+    if description:
+        parts.append(f"Description: {description}")
+    
+    # Requirements (old format only, might not exist in new format)
     if job_data.get('requirements'):
         parts.append("Requirements:")
         for req in job_data['requirements']:
             parts.append(f"  - {req}")
     
     return "\n".join(parts)
+
+
+def get_job_field(job_data: Dict, field_name: str) -> str:
+    """
+    Get a job field value with format-agnostic field mapping.
+    
+    Maps between old and new job data formats:
+    - title -> title
+    - company -> organization
+    - location -> locations_derived
+    - type -> employment_type
+    - description -> description_text
+    
+    Args:
+        job_data: Job offer data
+        field_name: Field name (using old format names for backward compatibility)
+        
+    Returns:
+        Field value as string
+    """
+    # Field mapping: old_name -> [old_name, new_name]
+    field_mapping = {
+        'title': ['title'],
+        'company': ['company', 'organization'],
+        'location': ['location', 'locations_derived'],
+        'type': ['type', 'employment_type'],
+        'description': ['description', 'description_text'],
+        'seniority': ['seniority'],
+        'remote': ['remote_derived']
+    }
+    
+    fields_to_check = field_mapping.get(field_name, [field_name])
+    
+    for field in fields_to_check:
+        value = job_data.get(field)
+        if value:
+            # Handle list values (e.g., locations_derived)
+            if isinstance(value, list):
+                return ', '.join(str(v) for v in value)
+            return str(value)
+    
+    return ''

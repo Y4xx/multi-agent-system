@@ -13,6 +13,17 @@ class EmailService:
         self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
         self.sender_email = os.getenv('SENDER_EMAIL', '')
         self.sender_password = os.getenv('SENDER_PASSWORD', '')
+        
+        # Import Gmail service lazily to avoid circular imports
+        self._google_oauth_service = None
+    
+    @property
+    def google_oauth_service(self):
+        """Lazy load Google OAuth service to avoid circular imports."""
+        if self._google_oauth_service is None:
+            from services.google_oauth_service import google_oauth_service
+            self._google_oauth_service = google_oauth_service
+        return self._google_oauth_service
     
     def send_email(
         self,
@@ -23,6 +34,7 @@ class EmailService:
     ) -> dict:
         """
         Send an email to a recipient.
+        Prioritizes Gmail API if connected, falls back to SMTP.
         
         Args:
             recipient_email: Email address of the recipient
@@ -34,6 +46,19 @@ class EmailService:
             Dictionary with success status and message
         """
         try:
+            # Try Gmail API first if connected
+            gmail_status = self.google_oauth_service.get_connection_status()
+            if gmail_status.get('connected'):
+                result = self.google_oauth_service.send_email_via_gmail(
+                    recipient_email=recipient_email,
+                    subject=subject,
+                    body=html_body if html_body else body
+                )
+                if result.get('success'):
+                    return result
+                # If Gmail API fails, fall through to SMTP
+                print(f"Gmail API failed, falling back to SMTP: {result.get('message')}")
+            
             # For demo purposes, if credentials are not set, simulate sending
             if not self.sender_email or not self.sender_password:
                 return {
