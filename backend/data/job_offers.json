@@ -1,305 +1,673 @@
 [
   {
-    "id": 1,
+    "id": "1",
+    "date_posted": "2025-01-15T10:00:00",
+    "date_created": "2025-01-15T10:00:00",
     "title": "Senior Python Developer",
-    "company": "Tech Innovators Inc.",
-    "location": "Paris, France",
-    "type": "Full-time",
-    "description": "We are looking for an experienced Python developer with expertise in FastAPI, Django, and machine learning. The ideal candidate should have strong skills in building scalable APIs and working with cloud technologies.",
-    "requirements": [
-      "5+ years of Python development experience",
-      "Experience with FastAPI or Django",
-      "Knowledge of machine learning frameworks",
-      "Strong understanding of RESTful APIs",
-      "Experience with Docker and cloud platforms"
+    "organization": "Tech Innovators Inc.",
+    "organization_url": "https://www.techinnovators.com",
+    "date_validthrough": "2025-02-15T10:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Paris",
+          "addressRegion": "\u00cele-de-France",
+          "streetAddress": null
+        },
+        "latitude": 48.8566,
+        "longitude": 2.3522
+      }
     ],
-    "salary": "60000-80000 DH",
-    "posted_date": "2025-01-15",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "60000-80000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.techinnovators.com/jobs/senior-python-developer",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Paris"
+    ],
+    "counties_derived": [
+      "Paris"
+    ],
+    "regions_derived": [
+      "\u00cele-de-France"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Paris, \u00cele-de-France, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      48.8566
+    ],
+    "lngs_derived": [
+      2.3522
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.techinnovators.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Innovation in Technology",
+    "linkedin_org_industry": "IT Services and IT Consulting",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Paris, France",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2010",
+    "linkedin_org_specialties": [
+      "Python Development",
+      "Cloud Technologies",
+      "Machine Learning"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Leading technology innovators",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid-Senior level",
+    "directapply": true,
+    "linkedin_org_slug": "techinnovators",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "We are looking for an experienced Python developer with expertise in FastAPI, Django, and machine learning. The ideal candidate should have strong skills in building scalable APIs and working with cloud technologies. Requirements: 5+ years of Python development experience, Experience with FastAPI or Django, Knowledge of machine learning frameworks, Strong understanding of RESTful APIs, Experience with Docker and cloud platforms",
     "application_email": "hr@techinnovators.com"
   },
   {
-    "id": 2,
+    "id": "2",
+    "date_posted": "2025-01-18T09:00:00",
+    "date_created": "2025-01-18T09:00:00",
     "title": "Frontend Developer - React",
-    "company": "Digital Solutions Ltd.",
-    "location": "Lyon, France",
-    "type": "Full-time",
-    "description": "Join our team as a React frontend developer. You will be responsible for building modern, responsive web applications using React, TypeScript, and modern UI frameworks.",
-    "requirements": [
-      "3+ years of React development",
-      "Strong TypeScript skills",
-      "Experience with Tailwind CSS",
-      "Knowledge of state management (Redux, Context API)",
-      "Familiarity with modern build tools"
+    "organization": "Digital Solutions Ltd.",
+    "organization_url": "https://www.digitalsolutions.fr",
+    "date_validthrough": "2025-02-18T09:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Lyon",
+          "addressRegion": "Auvergne-Rh\u00f4ne-Alpes",
+          "streetAddress": null
+        },
+        "latitude": 45.764,
+        "longitude": 4.8357
+      }
     ],
-    "salary": "45000-60000 DH",
-    "posted_date": "2025-01-18",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "45000-60000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.digitalsolutions.fr/jobs/frontend-react",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Lyon"
+    ],
+    "counties_derived": [
+      "Rh\u00f4ne"
+    ],
+    "regions_derived": [
+      "Auvergne-Rh\u00f4ne-Alpes"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Lyon, Auvergne-Rh\u00f4ne-Alpes, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      45.764
+    ],
+    "lngs_derived": [
+      4.8357
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.digitalsolutions.fr",
+    "linkedin_org_size": "11-50 employees",
+    "linkedin_org_slogan": "Digital Excellence",
+    "linkedin_org_industry": "IT Services and IT Consulting",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Lyon, France",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "React Development",
+      "Frontend Development",
+      "UI/UX"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Building digital solutions",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid level",
+    "directapply": true,
+    "linkedin_org_slug": "digitalsolutions",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "Join our team as a React frontend developer. You will be responsible for building modern, responsive web applications using React, TypeScript, and modern UI frameworks. Requirements: 3+ years of React development, Strong TypeScript skills, Experience with Tailwind CSS, Knowledge of state management (Redux, Context API), Familiarity with modern build tools",
     "application_email": "jobs@digitalsolutions.fr"
   },
   {
-    "id": 3,
+    "id": "3",
+    "date_posted": "2025-01-10T14:00:00",
+    "date_created": "2025-01-10T14:00:00",
     "title": "Machine Learning Engineer",
-    "company": "AI Research Labs",
-    "location": "Toulouse, France",
-    "type": "Full-time",
-    "description": "We're seeking a talented ML engineer to develop and deploy machine learning models. Experience with NLP, computer vision, and deep learning frameworks is essential.",
-    "requirements": [
-      "MSc or PhD in Computer Science or related field",
-      "Strong Python and ML framework experience (TensorFlow, PyTorch)",
-      "Experience with NLP and transformers",
-      "Knowledge of MLOps practices",
-      "Published research is a plus"
+    "organization": "AI Research Labs",
+    "organization_url": "https://www.airesearchlabs.eu",
+    "date_validthrough": "2025-02-10T14:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Toulouse",
+          "addressRegion": "Occitanie",
+          "streetAddress": null
+        },
+        "latitude": 43.6047,
+        "longitude": 1.4442
+      }
     ],
-    "salary": "70000-90000 DH",
-    "posted_date": "2025-01-10",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "70000-90000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.airesearchlabs.eu/jobs/ml-engineer",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Toulouse"
+    ],
+    "counties_derived": [
+      "Haute-Garonne"
+    ],
+    "regions_derived": [
+      "Occitanie"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Toulouse, Occitanie, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      43.6047
+    ],
+    "lngs_derived": [
+      1.4442
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.airesearchlabs.eu",
+    "linkedin_org_size": "201-500 employees",
+    "linkedin_org_slogan": "Advancing AI Research",
+    "linkedin_org_industry": "Research",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Toulouse, France",
+    "linkedin_org_type": "Public Company",
+    "linkedin_org_foundeddate": "2008",
+    "linkedin_org_specialties": [
+      "Machine Learning",
+      "Deep Learning",
+      "NLP"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Leading AI research organization",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Senior level",
+    "directapply": true,
+    "linkedin_org_slug": "airesearchlabs",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "We're seeking a talented ML engineer to develop and deploy machine learning models. Experience with NLP, computer vision, and deep learning frameworks is essential. Requirements: MSc or PhD in Computer Science or related field, Strong Python and ML framework experience (TensorFlow, PyTorch), Experience with NLP and transformers, Knowledge of MLOps practices, Published research is a plus",
     "application_email": "careers@airesearchlabs.eu"
   },
   {
-    "id": 4,
+    "id": "4",
+    "date_posted": "2025-01-20T11:00:00",
+    "date_created": "2025-01-20T11:00:00",
     "title": "Full Stack Developer Internship",
-    "company": "StartupHub",
-    "location": "Bordeaux, France",
-    "type": "Internship",
-    "description": "6-month internship opportunity for aspiring full-stack developers. Work on real projects using modern web technologies including React, Node.js, and Python.",
-    "requirements": [
-      "Currently pursuing a degree in Computer Science",
-      "Basic knowledge of React and Node.js",
-      "Understanding of REST APIs",
-      "Eager to learn and adapt",
-      "Good communication skills"
+    "organization": "StartupHub",
+    "organization_url": "https://www.startuphub.fr",
+    "date_validthrough": "2025-02-20T11:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Bordeaux",
+          "addressRegion": "Nouvelle-Aquitaine",
+          "streetAddress": null
+        },
+        "latitude": 44.8378,
+        "longitude": -0.5792
+      }
     ],
-    "salary": "1200-1500 DH/month",
-    "posted_date": "2025-01-20",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "1200-1500 EUR/month",
+    "employment_type": [
+      "INTERN"
+    ],
+    "url": "https://www.startuphub.fr/jobs/fullstack-intern",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Bordeaux"
+    ],
+    "counties_derived": [
+      "Gironde"
+    ],
+    "regions_derived": [
+      "Nouvelle-Aquitaine"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Bordeaux, Nouvelle-Aquitaine, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      44.8378
+    ],
+    "lngs_derived": [
+      -0.5792
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.startuphub.fr",
+    "linkedin_org_size": "2-10 employees",
+    "linkedin_org_slogan": "Growing Startups",
+    "linkedin_org_industry": "Technology, Information and Internet",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Bordeaux, France",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2020",
+    "linkedin_org_specialties": [
+      "Full Stack Development",
+      "Web Development"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Startup incubator and development hub",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Internship",
+    "directapply": true,
+    "linkedin_org_slug": "startuphub",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "6-month internship opportunity for aspiring full-stack developers. Work on real projects using modern web technologies including React, Node.js, and Python. Requirements: Currently pursuing a degree in Computer Science, Basic knowledge of React and Node.js, Understanding of REST APIs, Eager to learn and adapt, Good communication skills",
     "application_email": "internships@startuphub.fr"
   },
   {
-    "id": 5,
+    "id": "5",
+    "date_posted": "2025-01-12T13:00:00",
+    "date_created": "2025-01-12T13:00:00",
     "title": "DevOps Engineer",
-    "company": "CloudTech Systems",
-    "location": "Nantes, France",
-    "type": "Full-time",
-    "description": "Looking for a DevOps engineer to manage our cloud infrastructure and CI/CD pipelines. Experience with Kubernetes, Docker, and AWS is required.",
-    "requirements": [
-      "4+ years of DevOps experience",
-      "Expert knowledge of Docker and Kubernetes",
-      "Experience with AWS or Azure",
-      "Strong scripting skills (Python, Bash)",
-      "Knowledge of monitoring and logging tools"
+    "organization": "CloudTech Systems",
+    "organization_url": "https://www.cloudtech.com",
+    "date_validthrough": "2025-02-12T13:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Nantes",
+          "addressRegion": "Pays de la Loire",
+          "streetAddress": null
+        },
+        "latitude": 47.2184,
+        "longitude": -1.5536
+      }
     ],
-    "salary": "55000-75000 DH",
-    "posted_date": "2025-01-12",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "55000-75000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.cloudtech.com/jobs/devops-engineer",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Nantes"
+    ],
+    "counties_derived": [
+      "Loire-Atlantique"
+    ],
+    "regions_derived": [
+      "Pays de la Loire"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Nantes, Pays de la Loire, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      47.2184
+    ],
+    "lngs_derived": [
+      -1.5536
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.cloudtech.com",
+    "linkedin_org_size": "501-1000 employees",
+    "linkedin_org_slogan": "Cloud Solutions Excellence",
+    "linkedin_org_industry": "IT Services and IT Consulting",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Nantes, France",
+    "linkedin_org_type": "Public Company",
+    "linkedin_org_foundeddate": "2005",
+    "linkedin_org_specialties": [
+      "DevOps",
+      "Cloud Infrastructure",
+      "CI/CD"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Cloud technology experts",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid-Senior level",
+    "directapply": true,
+    "linkedin_org_slug": "cloudtech",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "Looking for a DevOps engineer to manage our cloud infrastructure and CI/CD pipelines. Experience with Kubernetes, Docker, and AWS is required. Requirements: 4+ years of DevOps experience, Expert knowledge of Docker and Kubernetes, Experience with AWS or Azure, Strong scripting skills (Python, Bash), Knowledge of monitoring and logging tools",
     "application_email": "devops@cloudtech.com"
   },
   {
-    "id": 6,
+    "id": "6",
+    "date_posted": "2025-01-14T10:00:00",
+    "date_created": "2025-01-14T10:00:00",
     "title": "Data Scientist",
-    "company": "Analytics Pro",
-    "location": "Marseille, France",
-    "type": "Full-time",
-    "description": "Join our data science team to analyze large datasets and build predictive models. Strong statistical knowledge and Python skills are essential.",
-    "requirements": [
-      "MSc in Statistics, Mathematics, or related field",
-      "3+ years of data science experience",
-      "Proficiency in Python (pandas, scikit-learn)",
-      "Experience with SQL and data visualization",
-      "Strong analytical and problem-solving skills"
+    "organization": "Analytics Pro",
+    "organization_url": "https://www.analyticspro.fr",
+    "date_validthrough": "2025-02-14T10:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Marseille",
+          "addressRegion": "Provence-Alpes-C\u00f4te d'Azur",
+          "streetAddress": null
+        },
+        "latitude": 43.2965,
+        "longitude": 5.3698
+      }
     ],
-    "salary": "50000-70000 DH",
-    "posted_date": "2025-01-14",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "50000-70000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.analyticspro.fr/jobs/data-scientist",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Marseille"
+    ],
+    "counties_derived": [
+      "Bouches-du-Rh\u00f4ne"
+    ],
+    "regions_derived": [
+      "Provence-Alpes-C\u00f4te d'Azur"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Marseille, Provence-Alpes-C\u00f4te d'Azur, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      43.2965
+    ],
+    "lngs_derived": [
+      5.3698
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.analyticspro.fr",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Analytics Excellence",
+    "linkedin_org_industry": "IT Services and IT Consulting",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Marseille, France",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2012",
+    "linkedin_org_specialties": [
+      "Data Science",
+      "Analytics",
+      "Machine Learning"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Leading analytics company",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid level",
+    "directapply": true,
+    "linkedin_org_slug": "analyticspro",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "Join our data science team to analyze large datasets and build predictive models. Strong statistical knowledge and Python skills are essential. Requirements: MSc in Statistics, Mathematics, or related field, 3+ years of data science experience, Proficiency in Python (pandas, scikit-learn), Experience with SQL and data visualization, Strong analytical and problem-solving skills",
     "application_email": "jobs@analyticspro.fr"
   },
   {
-    "id": 7,
+    "id": "7",
+    "date_posted": "2025-01-16T09:00:00",
+    "date_created": "2025-01-16T09:00:00",
     "title": "Backend Developer - Node.js",
-    "company": "WebScale Solutions",
-    "location": "Lille, France",
-    "type": "Full-time",
-    "description": "We need a skilled Node.js backend developer to build scalable microservices and APIs. Experience with MongoDB and message queues is preferred.",
-    "requirements": [
-      "4+ years of Node.js development",
-      "Experience with Express.js or NestJS",
-      "Knowledge of MongoDB or PostgreSQL",
-      "Understanding of microservices architecture",
-      "Familiarity with message queues (RabbitMQ, Kafka)"
+    "organization": "WebScale Solutions",
+    "organization_url": "https://www.webscale.com",
+    "date_validthrough": "2025-02-16T09:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Lille",
+          "addressRegion": "Hauts-de-France",
+          "streetAddress": null
+        },
+        "latitude": 50.6292,
+        "longitude": 3.0573
+      }
     ],
-    "salary": "48000-65000 DH",
-    "posted_date": "2025-01-16",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "48000-65000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.webscale.com/jobs/backend-nodejs",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Lille"
+    ],
+    "counties_derived": [
+      "Nord"
+    ],
+    "regions_derived": [
+      "Hauts-de-France"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Lille, Hauts-de-France, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      50.6292
+    ],
+    "lngs_derived": [
+      3.0573
+    ],
+    "remote_derived": false,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.webscale.com",
+    "linkedin_org_size": "201-500 employees",
+    "linkedin_org_slogan": "Scaling Web Solutions",
+    "linkedin_org_industry": "IT Services and IT Consulting",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Lille, France",
+    "linkedin_org_type": "Public Company",
+    "linkedin_org_foundeddate": "2008",
+    "linkedin_org_specialties": [
+      "Backend Development",
+      "Microservices",
+      "Node.js"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Web scaling experts",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid-Senior level",
+    "directapply": true,
+    "linkedin_org_slug": "webscale",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "We need a skilled Node.js backend developer to build scalable microservices and APIs. Experience with MongoDB and message queues is preferred. Requirements: 4+ years of Node.js development, Experience with Express.js or NestJS, Knowledge of MongoDB or PostgreSQL, Understanding of microservices architecture, Familiarity with message queues (RabbitMQ, Kafka)",
     "application_email": "hiring@webscale.com"
   },
   {
-    "id": 8,
+    "id": "8",
+    "date_posted": "2025-01-19T11:00:00",
+    "date_created": "2025-01-19T11:00:00",
     "title": "UI/UX Designer",
-    "company": "Creative Digital Agency",
-    "location": "Nice, France",
-    "type": "Full-time",
-    "description": "Creative UI/UX designer needed to design beautiful and intuitive user interfaces. Portfolio showcasing web and mobile design work is required.",
-    "requirements": [
-      "3+ years of UI/UX design experience",
-      "Proficiency in Figma and Adobe Creative Suite",
-      "Strong portfolio of web and mobile designs",
-      "Understanding of user-centered design principles",
-      "Good communication and collaboration skills"
+    "organization": "Creative Digital Agency",
+    "organization_url": "https://www.creativedigital.fr",
+    "date_validthrough": "2025-02-19T11:00:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "FR",
+          "addressLocality": "Nice",
+          "addressRegion": "Provence-Alpes-C\u00f4te d'Azur",
+          "streetAddress": null
+        },
+        "latitude": 43.7102,
+        "longitude": 7.262
+      }
     ],
-    "salary": "42000-58000 DH",
-    "posted_date": "2025-01-19",
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": "42000-58000 EUR",
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.creativedigital.fr/jobs/ui-ux-designer",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": null,
+    "cities_derived": [
+      "Nice"
+    ],
+    "counties_derived": [
+      "Alpes-Maritimes"
+    ],
+    "regions_derived": [
+      "Provence-Alpes-C\u00f4te d'Azur"
+    ],
+    "countries_derived": [
+      "France"
+    ],
+    "locations_derived": [
+      "Nice, Provence-Alpes-C\u00f4te d'Azur, France"
+    ],
+    "timezones_derived": [
+      "Europe/Paris"
+    ],
+    "lats_derived": [
+      43.7102
+    ],
+    "lngs_derived": [
+      7.262
+    ],
+    "remote_derived": true,
+    "linkedin_org_employees": null,
+    "linkedin_org_url": "www.creativedigital.fr",
+    "linkedin_org_size": "11-50 employees",
+    "linkedin_org_slogan": "Creative Excellence",
+    "linkedin_org_industry": "Design Services",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "Nice, France",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2016",
+    "linkedin_org_specialties": [
+      "UI/UX Design",
+      "Digital Design",
+      "Product Design"
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Creative digital agency",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid level",
+    "directapply": true,
+    "linkedin_org_slug": "creativedigital",
+    "no_jb_schema": null,
+    "external_apply_url": null,
+    "ats_duplicate": null,
+    "description_text": "Creative UI/UX designer needed to design beautiful and intuitive user interfaces. Portfolio showcasing web and mobile design work is required. Requirements: 3+ years of UI/UX design experience, Proficiency in Figma and Adobe Creative Suite, Strong portfolio of web and mobile designs, Understanding of user-centered design principles, Good communication and collaboration skills",
     "application_email": "design@creativedigital.fr"
-  },
-  {
-    "id": 9,
-    "title": "Software Engineering Internship",
-    "company": "Global Tech Corp",
-    "location": "Strasbourg, France",
-    "type": "Internship",
-    "description": "Summer internship program for computer science students. Work on innovative projects with mentorship from senior engineers.",
-    "requirements": [
-      "Enrolled in Computer Science or related program",
-      "Knowledge of at least one programming language",
-      "Strong problem-solving skills",
-      "Team player with good communication",
-      "Available for 3-6 months"
-    ],
-    "salary": "1000-1300 DH/month",
-    "posted_date": "2025-01-21",
-    "application_email": "internships@globaltech.com"
-  },
-  {
-    "id": 10,
-    "title": "Cybersecurity Analyst",
-    "company": "SecureNet Solutions",
-    "location": "Rennes, France",
-    "type": "Full-time",
-    "description": "Protect our systems and data as a cybersecurity analyst. Experience with security frameworks, penetration testing, and incident response required.",
-    "requirements": [
-      "3+ years of cybersecurity experience",
-      "Knowledge of security frameworks (NIST, ISO 27001)",
-      "Experience with penetration testing tools",
-      "Understanding of network security",
-      "Security certifications (CISSP, CEH) preferred"
-    ],
-    "salary": "52000-72000 DH",
-    "posted_date": "2025-01-17",
-    "application_email": "security@securenet.fr"
-  },
-  {
-    "id": 11,
-    "title": "Mobile App Developer - React Native",
-    "company": "MobileFirst Inc.",
-    "location": "Montpellier, France",
-    "type": "Full-time",
-    "description": "Develop cross-platform mobile applications using React Native. Experience with both iOS and Android deployment is required.",
-    "requirements": [
-      "3+ years of React Native development",
-      "Experience with iOS and Android deployment",
-      "Knowledge of mobile app architecture",
-      "Familiarity with native modules",
-      "Understanding of app store guidelines"
-    ],
-    "salary": "46000-62000 DH",
-    "posted_date": "2025-01-13",
-    "application_email": "mobile@mobilefirst.com"
-  },
-  {
-    "id": 12,
-    "title": "AI/ML Research Internship",
-    "company": "Future AI Labs",
-    "location": "Grenoble, France",
-    "type": "Internship",
-    "description": "Research internship focused on cutting-edge AI and machine learning. Ideal for PhD students or advanced MSc candidates.",
-    "requirements": [
-      "MSc or PhD student in AI/ML or related field",
-      "Strong mathematical background",
-      "Experience with deep learning frameworks",
-      "Published papers or research experience",
-      "Proficiency in Python"
-    ],
-    "salary": "1500-2000 DH/month",
-    "posted_date": "2025-01-11",
-    "application_email": "research@futureailabs.eu"
-  },
-  {
-    "id": 13,
-    "title": "Product Manager - Tech",
-    "company": "Innovation Group",
-    "location": "Paris, France",
-    "type": "Full-time",
-    "description": "Lead product development for our tech products. Strong technical background combined with business acumen required.",
-    "requirements": [
-      "5+ years of product management experience",
-      "Technical background in software development",
-      "Experience with agile methodologies",
-      "Strong analytical and leadership skills",
-      "Excellent communication abilities"
-    ],
-    "salary": "65000-85000 DH",
-    "posted_date": "2025-01-09",
-    "application_email": "pm@innovationgroup.fr"
-  },
-  {
-    "id": 14,
-    "title": "Cloud Architect",
-    "company": "Enterprise Solutions",
-    "location": "Lyon, France",
-    "type": "Full-time",
-    "description": "Design and implement cloud architecture solutions for enterprise clients. AWS or Azure certification required.",
-    "requirements": [
-      "6+ years of cloud architecture experience",
-      "AWS or Azure certification (Solutions Architect)",
-      "Experience with infrastructure as code",
-      "Knowledge of security best practices",
-      "Strong client-facing skills"
-    ],
-    "salary": "75000-95000 DH",
-    "posted_date": "2025-01-08",
-    "application_email": "cloud@enterprisesolutions.com"
-  },
-  {
-    "id": 15,
-    "title": "Junior Web Developer",
-    "company": "WebDev Academy",
-    "location": "Toulouse, France",
-    "type": "Full-time",
-    "description": "Entry-level position for recent graduates. Learn and grow with our experienced team while working on client projects.",
-    "requirements": [
-      "Bachelor's degree in Computer Science or related field",
-      "Basic knowledge of HTML, CSS, JavaScript",
-      "Familiarity with at least one framework (React, Vue, or Angular)",
-      "Eager to learn and improve",
-      "Good teamwork skills"
-    ],
-    "salary": "32000-42000 DH",
-    "posted_date": "2025-01-22",
-    "application_email": "junior@webdevacademy.fr"
-  },
-  {
-    "id": 16,
-    "title": "Cloud Solutions Architect",
-    "organization": "TechCloud Innovations",
-    "locations_derived": ["Paris", "Remote"],
-    "remote_derived": "Hybrid",
-    "employment_type": "Full-time",
-    "seniority": "Senior",
-    "description_text": "We are looking for an experienced Cloud Solutions Architect to design and implement scalable cloud infrastructure. You will work with cutting-edge technologies including AWS, Azure, and Google Cloud Platform to deliver enterprise-grade solutions.",
-    "application_email": "careers@techcloud.fr"
-  },
-  {
-    "id": 17,
-    "title": "Data Engineer",
-    "organization": "DataFlow Systems",
-    "locations_derived": ["Lyon", "Marseille"],
-    "remote_derived": "On-site",
-    "employment_type": "Full-time",
-    "seniority": "Mid-level",
-    "description_text": "Join our data engineering team to build robust data pipelines and ETL processes. Experience with Python, SQL, Apache Spark, and modern data warehousing solutions is essential.",
-    "application_email": "hr@dataflow-systems.com"
-  },
-  {
-    "id": 18,
-    "title": "Junior Frontend Developer",
-    "organization": "WebCraft Studio",
-    "locations_derived": ["Toulouse"],
-    "remote_derived": "Remote",
-    "employment_type": "Full-time",
-    "seniority": "Junior",
-    "description_text": "Entry-level position for a passionate frontend developer. You will work with React, TypeScript, and modern CSS frameworks to build beautiful user interfaces. Great mentorship and learning opportunities.",
-    "application_email": "jobs@webcraft.fr"
   }
 ]

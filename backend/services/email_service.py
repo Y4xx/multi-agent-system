@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from typing import Optional
 import os
 from dotenv import load_dotenv
+from openai import OpenAI
 
 load_dotenv()
 
@@ -16,6 +17,15 @@ class EmailService:
         
         # Import Gmail service lazily to avoid circular imports
         self._google_oauth_service = None
+        
+        # Initialize OpenAI client for email content generation
+        api_key = os.getenv('OPENAI_API_KEY')
+        if api_key:
+            self.openai_client = OpenAI(api_key=api_key)
+            self.model = os.getenv('MODEL_NAME', 'gpt-4o-mini')
+        else:
+            self.openai_client = None
+            self.model = None
     
     @property
     def google_oauth_service(self):
@@ -116,7 +126,7 @@ class EmailService:
         include_ai_attribution: bool = False
     ) -> dict:
         """
-        Send a job application email with improved formatting.
+        Send a job application email with AI-generated content formatting.
         
         Args:
             recipient_email: Email of the hiring manager/HR
@@ -132,7 +142,147 @@ class EmailService:
         """
         subject = f"Application for {job_title} position at {company}"
         
-        # Clean body text - remove extra whitespace and format nicely
+        # Use OpenAI to generate professional email body if available
+        if self.openai_client:
+            try:
+                body = self._generate_email_body_with_ai(
+                    job_title, company, applicant_name, motivation_letter
+                )
+            except Exception as e:
+                print(f"Error generating email with OpenAI: {str(e)}")
+                # Fallback to simple template
+                body = self._generate_simple_email_body(
+                    applicant_name, motivation_letter
+                )
+        else:
+            # Fallback to simple template
+            body = self._generate_simple_email_body(
+                applicant_name, motivation_letter
+            )
+        
+        # Generate HTML version using OpenAI if available
+        if self.openai_client:
+            try:
+                html_body = self._generate_html_email_with_ai(
+                    job_title, company, applicant_name, motivation_letter, include_ai_attribution
+                )
+            except Exception as e:
+                print(f"Error generating HTML email with OpenAI: {str(e)}")
+                # Fallback to simple HTML template
+                html_body = self._generate_simple_html_body(
+                    job_title, company, applicant_name, motivation_letter, include_ai_attribution
+                )
+        else:
+            # Fallback to simple HTML template
+            html_body = self._generate_simple_html_body(
+                job_title, company, applicant_name, motivation_letter, include_ai_attribution
+            )
+        
+        return self.send_email(recipient_email, subject, body, html_body)
+    
+    def _generate_email_body_with_ai(
+        self,
+        job_title: str,
+        company: str,
+        applicant_name: str,
+        motivation_letter: str
+    ) -> str:
+        """Generate professional email body using OpenAI."""
+        prompt = f"""Create a professional job application email body for the following:
+
+Job Title: {job_title}
+Company: {company}
+Applicant Name: {applicant_name}
+
+Motivation Letter Content:
+{motivation_letter}
+
+Instructions:
+1. Format the email professionally with proper greeting
+2. Keep the motivation letter content intact but format it nicely
+3. Add a brief professional closing
+4. Make it concise and well-structured
+5. Plain text format only
+
+Write the complete email body:"""
+        
+        response = self.openai_client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional email formatting assistant. You create well-structured, professional job application emails."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.5,
+            max_tokens=600
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    def _generate_html_email_with_ai(
+        self,
+        job_title: str,
+        company: str,
+        applicant_name: str,
+        motivation_letter: str,
+        include_ai_attribution: bool
+    ) -> str:
+        """Generate HTML email using OpenAI."""
+        footer_instruction = ""
+        if include_ai_attribution:
+            footer_instruction = "Include a small footer mentioning this was generated using an AI-powered system."
+        
+        prompt = f"""Create a professional HTML email for a job application with the following details:
+
+Job Title: {job_title}
+Company: {company}
+Applicant Name: {applicant_name}
+
+Motivation Letter:
+{motivation_letter}
+
+Instructions:
+1. Create a beautiful, professional HTML email layout
+2. Use modern, clean styling with good typography
+3. Include proper header with job title and company
+4. Format the motivation letter content nicely
+5. Add professional signature section
+6. Use a color scheme with blues (#0066cc) for headers
+7. Make it responsive and email-client compatible
+{footer_instruction}
+8. Keep formatting simple and professional
+
+Return only the complete HTML (including <html>, <head>, <body> tags):"""
+        
+        response = self.openai_client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an expert email designer who creates professional, beautiful HTML emails for job applications."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.5,
+            max_tokens=1000
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    def _generate_simple_email_body(
+        self,
+        applicant_name: str,
+        motivation_letter: str
+    ) -> str:
+        """Generate simple email body as fallback."""
         body = f"""Dear Hiring Manager,
 
 {motivation_letter}
@@ -140,13 +290,21 @@ class EmailService:
 Best regards,
 {applicant_name}
 """
-        
-        # Build footer conditionally
+        return body
+    
+    def _generate_simple_html_body(
+        self,
+        job_title: str,
+        company: str,
+        applicant_name: str,
+        motivation_letter: str,
+        include_ai_attribution: bool
+    ) -> str:
+        """Generate simple HTML email as fallback."""
         footer_content = ""
         if include_ai_attribution:
             footer_content = "<p>This application was generated using an AI-powered job application system.</p>"
         
-        # Enhanced HTML body with better styling
         html_body = f"""
         <html>
             <head>
@@ -195,8 +353,7 @@ Best regards,
             </body>
         </html>
         """
-        
-        return self.send_email(recipient_email, subject, body, html_body)
+        return html_body
 
 # Singleton instance
 email_service = EmailService()

@@ -268,18 +268,26 @@ def get_job_field(job_data: Dict, field_name: str) -> str:
         'type': ['type', 'employment_type'],
         'description': ['description', 'description_text'],
         'seniority': ['seniority'],
-        'remote': ['remote_derived']
+        'remote': ['remote_derived'],
+        'application_email': ['application_email']
     }
     
     fields_to_check = field_mapping.get(field_name, [field_name])
     
     for field in fields_to_check:
         value = job_data.get(field)
-        if value:
-            # Handle list values (e.g., locations_derived)
+        if value is not None:  # Allow 0 and False but not None
+            # Handle list values (e.g., locations_derived, employment_type)
             if isinstance(value, list):
-                # Filter out None values
-                return ', '.join(str(v) for v in value if v is not None)
-            return str(value)
+                # Filter out None values and empty strings after conversion
+                filtered = [str(v) for v in value if v is not None and str(v).strip()]
+                return ', '.join(filtered) if filtered else ''
+            # Handle boolean values
+            elif isinstance(value, bool):
+                return 'Yes' if value else 'No'
+            # Handle string values - only return if not empty
+            str_value = str(value).strip()
+            if str_value:
+                return str_value
     
     return ''
