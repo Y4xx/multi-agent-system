@@ -1,15 +1,27 @@
 from typing import Dict
-from datetime import datetime
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
 from services.utils import get_job_field
+
+load_dotenv()
 
 class MotivationAgent:
     """
-    Agent responsible for generating personalized motivation letters.
+    Agent responsible for generating personalized motivation letters using OpenAI API.
     Format-agnostic: works with both old and new job data formats.
     """
     
     def __init__(self):
         self.name = "Motivation Agent"
+        # Initialize OpenAI client
+        api_key = os.getenv('OPENAI_API_KEY')
+        if api_key:
+            self.client = OpenAI(api_key=api_key)
+            self.model = os.getenv('MODEL_NAME', 'gpt-4o-mini')
+        else:
+            self.client = None
+            self.model = None
     
     def generate_motivation_letter(
         self,
@@ -18,7 +30,7 @@ class MotivationAgent:
         custom_message: str = ""
     ) -> str:
         """
-        Generate a personalized motivation letter.
+        Generate a personalized motivation letter using OpenAI API.
         
         Args:
             cv_data: Parsed CV data
@@ -32,96 +44,172 @@ class MotivationAgent:
         applicant_name = cv_data.get('name', 'Applicant')
         job_title = get_job_field(job_data, 'title') or 'the position'
         company = get_job_field(job_data, 'company') or 'your company'
+        location = get_job_field(job_data, 'location') or 'Not specified'
         job_description = get_job_field(job_data, 'description')
-        requirements = job_data.get('requirements', [])
+        seniority = get_job_field(job_data, 'seniority') or ''
         
         # Extract applicant's skills and experience
         skills = cv_data.get('skills', [])
         experience = cv_data.get('experience', [])
         education = cv_data.get('education', [])
         
-        # Generate the letter
+        # If OpenAI is not configured, fall back to basic template
+        if not self.client:
+            return self._generate_fallback_letter(
+                applicant_name, job_title, company, skills, experience, custom_message
+            )
+        
+        # Build prompt for OpenAI
+        prompt = self._build_openai_prompt(
+            applicant_name, job_title, company, location, job_description,
+            seniority, skills, experience, education, custom_message
+        )
+        
+        try:
+            # Call OpenAI API
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an expert career counselor and professional writer specializing in crafting personalized, compelling motivation letters. Your letters are professional, concise, and highlight the candidate's relevant skills and experience."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.7,
+                max_tokens=800
+            )
+            
+            motivation_letter = response.choices[0].message.content.strip()
+            return motivation_letter
+            
+        except Exception as e:
+            print(f"Error calling OpenAI API: {str(e)}")
+            # Fall back to basic template on error
+            return self._generate_fallback_letter(
+                applicant_name, job_title, company, skills, experience, custom_message
+            )
+    
+    def _build_openai_prompt(
+        self,
+        applicant_name: str,
+        job_title: str,
+        company: str,
+        location: str,
+        job_description: str,
+        seniority: str,
+        skills: list,
+        experience: list,
+        education: list,
+        custom_message: str
+    ) -> str:
+        """Build a comprehensive prompt for OpenAI."""
+        
+        # Format skills
+        skills_text = ', '.join(skills[:10]) if skills else 'various technical skills'
+        
+        # Format experience
+        experience_text = ""
+        if experience:
+            for i, exp in enumerate(experience[:3]):
+                if isinstance(exp, dict):
+                    title = exp.get('title', '')
+                    comp = exp.get('company', '')
+                    if title and comp:
+                        experience_text += f"- {title} at {comp}\n"
+        
+        # Format education
+        education_text = ""
+        if education:
+            for edu in education[:2]:
+                if isinstance(edu, dict):
+                    degree = edu.get('degree', '')
+                    institution = edu.get('institution', '')
+                    if degree:
+                        education_text += f"- {degree}" + (f" from {institution}" if institution else "") + "\n"
+        
+        prompt = f"""Write a professional and personalized motivation letter for the following job application:
+
+**Job Details:**
+- Position: {job_title}
+- Company: {company}
+- Location: {location}
+{f"- Seniority Level: {seniority}" if seniority else ""}
+
+**Job Description:**
+{job_description[:500]}
+
+**Candidate Information:**
+- Name: {applicant_name}
+- Skills: {skills_text}
+
+**Professional Experience:**
+{experience_text if experience_text else "Entry-level candidate"}
+
+**Education:**
+{education_text if education_text else "Educational background available"}
+
+{f"**Additional Message to Include:**{chr(10)}{custom_message}{chr(10)}" if custom_message else ""}
+
+**Instructions:**
+1. Write a compelling motivation letter that highlights the candidate's relevant skills and experience
+2. Align the candidate's qualifications with the job requirements
+3. Keep it professional yet engaging
+4. Length: 250-350 words
+5. Structure: Opening, 2-3 body paragraphs highlighting qualifications, closing
+6. End with "Sincerely," followed by the candidate's name
+7. Do NOT include a subject line or address header
+8. Start directly with "Dear Hiring Manager," or similar greeting
+
+Write the complete motivation letter now:"""
+        
+        return prompt
+    
+    def _generate_fallback_letter(
+        self,
+        applicant_name: str,
+        job_title: str,
+        company: str,
+        skills: list,
+        experience: list,
+        custom_message: str
+    ) -> str:
+        """Generate a basic template letter as fallback."""
         letter_parts = []
         
-        # Opening
-        letter_parts.append(f"Dear Hiring Manager,")
+        letter_parts.append("Dear Hiring Manager,")
         letter_parts.append("")
         
-        # Introduction
         letter_parts.append(
             f"I am writing to express my strong interest in the {job_title} position at {company}. "
             f"With my background and skills, I am confident that I would be a valuable addition to your team."
         )
         letter_parts.append("")
         
-        # Skills and qualifications
         if skills:
-            top_skills = skills[:5]
-            skills_text = ", ".join(top_skills[:-1])
-            if len(top_skills) > 1:
-                skills_text += f", and {top_skills[-1]}"
-            else:
-                skills_text = top_skills[0]
-            
+            skills_text = ", ".join(skills[:5])
             letter_parts.append(
                 f"My technical expertise includes {skills_text}, which align well with the requirements "
-                f"for this role. I have developed these skills through practical experience and continuous learning."
+                f"for this role."
             )
             letter_parts.append("")
         
-        # Experience
-        if experience:
-            exp_count = len(experience)
-            letter_parts.append(
-                f"I bring {exp_count} professional experience{'s' if exp_count > 1 else ''} to this role. "
-            )
-            
-            if experience[0] and isinstance(experience[0], dict):
-                recent_exp = experience[0]
-                letter_parts.append(
-                    f"Most recently, I worked as {recent_exp.get('title', 'a professional')} at "
-                    f"{recent_exp.get('company', 'a leading organization')}, where I gained valuable "
-                    f"experience that directly applies to this position."
-                )
-            letter_parts.append("")
-        
-        # Why this company/role
-        letter_parts.append(
-            f"I am particularly drawn to this opportunity at {company} because of your commitment to "
-            f"innovation and excellence. The role's focus on {self._extract_key_focus(job_description)} "
-            f"aligns perfectly with my career goals and expertise."
-        )
-        letter_parts.append("")
-        
-        # Custom message if provided
         if custom_message:
             letter_parts.append(custom_message)
             letter_parts.append("")
         
-        # Closing
         letter_parts.append(
             f"I am excited about the possibility of contributing to {company}'s success and would welcome "
-            f"the opportunity to discuss how my background and skills would benefit your team. "
-            f"Thank you for considering my application."
+            f"the opportunity to discuss how my background and skills would benefit your team."
         )
         letter_parts.append("")
         letter_parts.append("Sincerely,")
         letter_parts.append(applicant_name)
         
         return "\n".join(letter_parts)
-    
-    def _extract_key_focus(self, description: str) -> str:
-        """Extract the key focus area from job description."""
-        # Simple extraction of first meaningful phrase
-        sentences = description.split('.')
-        if sentences:
-            first_sentence = sentences[0].strip()
-            # Extract key phrase (first 50 chars or until comma)
-            key_focus = first_sentence[:50]
-            if ',' in key_focus:
-                key_focus = key_focus.split(',')[0]
-            return key_focus.lower()
-        return "the role's responsibilities"
     
     def customize_letter(
         self,

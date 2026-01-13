@@ -1,5 +1,6 @@
 from typing import Dict, List
 from services.email_service import email_service
+from services.utils import get_job_field
 
 class ApplicationAgent:
     """
@@ -29,15 +30,18 @@ class ApplicationAgent:
         """
         applicant_name = cv_data.get('name', 'Applicant')
         applicant_email = cv_data.get('email', '')
-        recipient_email = job_data.get('application_email', '')
-        job_title = job_data.get('title', '')
-        company = job_data.get('company', '')
+        
+        # Use format-agnostic field extraction
+        recipient_email = get_job_field(job_data, 'application_email')
+        job_title = get_job_field(job_data, 'title')
+        company = get_job_field(job_data, 'company')
+        job_id = job_data.get('id')
         
         if not recipient_email:
             return {
                 'success': False,
                 'message': 'No application email found for this job offer',
-                'job_id': job_data.get('id'),
+                'job_id': job_id,
                 'job_title': job_title
             }
         
@@ -54,7 +58,7 @@ class ApplicationAgent:
         application_record = {
             'applicant_name': applicant_name,
             'applicant_email': applicant_email,
-            'job_id': job_data.get('id'),
+            'job_id': job_id,
             'job_title': job_title,
             'company': company,
             'recipient_email': recipient_email,
@@ -68,7 +72,7 @@ class ApplicationAgent:
         return {
             'success': result['success'],
             'message': result['message'],
-            'job_id': job_data.get('id'),
+            'job_id': job_id,
             'job_title': job_title,
             'company': company,
             'recipient_email': recipient_email
