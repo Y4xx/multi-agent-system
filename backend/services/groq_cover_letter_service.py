@@ -63,7 +63,6 @@ class GroqCoverLetterService:
         # If no explicit requirements, extract from description
         if not requirements and description:
             # Look for requirement patterns in description
-            import re
             # Split on common separators and patterns
             req_patterns = re.split(r'[;,]\s*(?=[A-Z])|Requirements:\s*|Qualifications:\s*', description)
             requirements = [req.strip() for req in req_patterns if req.strip() and len(req.strip()) > 10]
