@@ -18,6 +18,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from dotenv import load_dotenv
+from services.utils import get_mime_type
 
 load_dotenv()
 
@@ -313,17 +314,22 @@ class GoogleOAuthService:
                 # Add attachments
                 for file_path in attachments:
                     if os.path.exists(file_path):
-                        content_type = 'application/pdf'  # Assuming PDF files
-                        
-                        with open(file_path, 'rb') as f:
-                            part = MIMEBase('application', 'octet-stream')
-                            part.set_payload(f.read())
-                            encoders.encode_base64(part)
-                            part.add_header(
-                                'Content-Disposition',
-                                f'attachment; filename={os.path.basename(file_path)}'
-                            )
-                            message.attach(part)
+                        try:
+                            # Get MIME type dynamically
+                            mime_type = get_mime_type(file_path)
+                            main_type, sub_type = mime_type.split('/', 1)
+                            
+                            with open(file_path, 'rb') as f:
+                                part = MIMEBase(main_type, sub_type)
+                                part.set_payload(f.read())
+                                encoders.encode_base64(part)
+                                part.add_header(
+                                    'Content-Disposition',
+                                    f'attachment; filename={os.path.basename(file_path)}'
+                                )
+                                message.attach(part)
+                        except (OSError, IOError) as e:
+                            logging.error(f"Error attaching file {file_path}: {str(e)}")
                 
                 raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
             else:

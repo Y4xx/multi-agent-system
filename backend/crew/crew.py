@@ -26,6 +26,7 @@ from agents.cv_analysis_agent import cv_analysis_agent as legacy_cv_agent
 from agents.job_fetcher_agent import job_fetcher_agent as legacy_job_agent
 from agents.matching_agent import matching_agent as legacy_matching_agent
 from services.email_service import email_service
+from services.utils import sanitize_filename
 
 # Import new Groq-powered services
 from services.groq_cover_letter_service import groq_cover_letter_service
@@ -193,8 +194,8 @@ class JobApplicationCrew:
             }
         
         # Generate PDF for motivation letter
-        safe_name = "".join(c for c in applicant_name if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
-        safe_company = "".join(c for c in company if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
+        safe_name = sanitize_filename(applicant_name)
+        safe_company = sanitize_filename(company)
         
         motivation_letter_filename = f"Lettre_Motivation_{safe_name}_{safe_company}.pdf"
         motivation_letter_path = pdf_export_service.export_to_pdf(

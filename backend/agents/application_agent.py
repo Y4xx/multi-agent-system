@@ -1,6 +1,6 @@
 from typing import Dict, List
 from services.email_service import email_service
-from services.utils import get_job_field
+from services.utils import get_job_field, sanitize_filename
 
 class ApplicationAgent:
     """
@@ -49,8 +49,8 @@ class ApplicationAgent:
             }
         
         # Generate PDF for motivation letter
-        safe_name = "".join(c for c in applicant_name if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
-        safe_company = "".join(c for c in company if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
+        safe_name = sanitize_filename(applicant_name)
+        safe_company = sanitize_filename(company)
         
         motivation_letter_filename = f"Lettre_Motivation_{safe_name}_{safe_company}.pdf"
         motivation_letter_path = pdf_export_service.export_to_pdf(

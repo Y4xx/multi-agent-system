@@ -1,4 +1,5 @@
 import smtplib
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -7,10 +8,28 @@ from typing import Optional, List
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from services.utils import get_mime_type
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
 class EmailService:
+    # Email body template constant
+    EMAIL_BODY_TEMPLATE = """Madame, Monsieur,
+
+Je vous adresse ma candidature pour le poste de {job_title} au sein de {company}.
+
+Vous trouverez ci-joint mon CV ainsi que ma lettre de motivation détaillant mon parcours et mes motivations pour ce poste.
+
+Je reste à votre disposition pour un entretien afin de discuter de ma candidature.
+
+Cordialement,
+{applicant_name}
+{applicant_email}
+{applicant_phone}"""
+    
     def __init__(self):
         self.smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
         self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
@@ -110,15 +129,22 @@ class EmailService:
             if attachments:
                 for file_path in attachments:
                     if os.path.exists(file_path):
-                        with open(file_path, 'rb') as f:
-                            part = MIMEBase('application', 'octet-stream')
-                            part.set_payload(f.read())
-                            encoders.encode_base64(part)
-                            part.add_header(
-                                'Content-Disposition',
-                                f'attachment; filename={os.path.basename(file_path)}'
-                            )
-                            message.attach(part)
+                        try:
+                            # Get MIME type dynamically
+                            mime_type = get_mime_type(file_path)
+                            main_type, sub_type = mime_type.split('/', 1)
+                            
+                            with open(file_path, 'rb') as f:
+                                part = MIMEBase(main_type, sub_type)
+                                part.set_payload(f.read())
+                                encoders.encode_base64(part)
+                                part.add_header(
+                                    'Content-Disposition',
+                                    f'attachment; filename={os.path.basename(file_path)}'
+                                )
+                                message.attach(part)
+                        except (OSError, IOError) as e:
+                            logging.error(f"Error attaching file {file_path}: {str(e)}")
             
             # Send email
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
@@ -131,9 +157,14 @@ class EmailService:
                 'message': f'Email sent successfully to {recipient_email}'
             }
             
+        except smtplib.SMTPException as e:
+            logging.error(f"SMTP error sending email: {str(e)}")
+            return {
+                'success': False,
+                'message': 'Failed to send email. Please check your email configuration.'
+            }
         except Exception as e:
-            # Log error for debugging
-            print(f"Email send error: {str(e)}")
+            logging.error(f"Unexpected error sending email: {str(e)}")
             return {
                 'success': False,
                 'message': 'Failed to send email. Please check your email configuration.'
@@ -195,10 +226,29 @@ Subject line:"""
             subject = subject.strip('"').strip("'")
             return subject
             
-        except Exception as e:
-            print(f"Error generating AI subject: {str(e)}")
-            # Fallback to template
+        except openai.OpenAIError as e:
+            logging.warning(f"OpenAI error generating subject: {str(e)}")
             return f"Candidature de {applicant_name} pour le poste de {job_title} - {company}"
+        except Exception as e:
+            logging.error(f"Unexpected error generating AI subject: {str(e)}")
+            return f"Candidature de {applicant_name} pour le poste de {job_title} - {company}"
+    
+    def _generate_fallback_email_body(
+        self,
+        job_title: str,
+        company: str,
+        applicant_name: str,
+        applicant_email: str,
+        applicant_phone: str
+    ) -> str:
+        """Generate fallback email body using template."""
+        return self.EMAIL_BODY_TEMPLATE.format(
+            job_title=job_title,
+            company=company,
+            applicant_name=applicant_name,
+            applicant_email=applicant_email,
+            applicant_phone=applicant_phone if applicant_phone else ''
+        )
     
     def _generate_ai_email_body(
         self,
@@ -222,19 +272,10 @@ Subject line:"""
             Generated email body in French
         """
         if not self.openai_client:
-            # Fallback to simple template
-            return f"""Madame, Monsieur,
-
-Je vous adresse ma candidature pour le poste de {job_title} au sein de {company}.
-
-Vous trouverez ci-joint mon CV ainsi que ma lettre de motivation détaillant mon parcours et mes motivations pour ce poste.
-
-Je reste à votre disposition pour un entretien afin de discuter de ma candidature.
-
-Cordialement,
-{applicant_name}
-{applicant_email}
-{applicant_phone if applicant_phone else ''}"""
+            # Use template fallback
+            return self._generate_fallback_email_body(
+                job_title, company, applicant_name, applicant_email, applicant_phone
+            )
         
         try:
             prompt = f"""Generate a professional French email body for a job application.
@@ -277,21 +318,19 @@ Email body:"""
             body = response.choices[0].message.content.strip()
             return body
             
+            body = response.choices[0].message.content.strip()
+            return body
+            
+        except openai.OpenAIError as e:
+            logging.warning(f"OpenAI error generating email body: {str(e)}")
+            return self._generate_fallback_email_body(
+                job_title, company, applicant_name, applicant_email, applicant_phone
+            )
         except Exception as e:
-            print(f"Error generating AI email body: {str(e)}")
-            # Fallback to simple template
-            return f"""Madame, Monsieur,
-
-Je vous adresse ma candidature pour le poste de {job_title} au sein de {company}.
-
-Vous trouverez ci-joint mon CV ainsi que ma lettre de motivation détaillant mon parcours et mes motivations pour ce poste.
-
-Je reste à votre disposition pour un entretien afin de discuter de ma candidature.
-
-Cordialement,
-{applicant_name}
-{applicant_email}
-{applicant_phone if applicant_phone else ''}"""
+            logging.error(f"Unexpected error generating AI email body: {str(e)}")
+            return self._generate_fallback_email_body(
+                job_title, company, applicant_name, applicant_email, applicant_phone
+            )
     
     def send_job_application(
         self,

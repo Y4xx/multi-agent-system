@@ -8,11 +8,15 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 import shutil
+import logging
 
 from crew.crew import job_application_crew
 from agents.job_fetcher_agent import job_fetcher_agent
 from agents.application_agent import application_agent
-from services.utils import save_json_file
+from services.utils import save_json_file, sanitize_filename
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 # Create router
 router = APIRouter()
@@ -76,12 +80,12 @@ async def upload_cv(file: UploadFile = File(...)):
             try:
                 if os.path.isfile(old_path):
                     os.remove(old_path)
-            except Exception as e:
-                print(f"Error removing old CV file {old_file}: {str(e)}")
+            except (OSError, PermissionError) as e:
+                logging.warning(f"Error removing old CV file {old_file}: {str(e)}")
         
         # Copy CV to temp_cv folder with standardized name
         candidate_name = cv_data.get('name', 'Candidate')
-        safe_name = "".join(c for c in candidate_name if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
+        safe_name = sanitize_filename(candidate_name)
         temp_cv_filename = f"CV_{safe_name}.pdf"
         temp_cv_path = os.path.join(TEMP_CV_DIR, temp_cv_filename)
         
