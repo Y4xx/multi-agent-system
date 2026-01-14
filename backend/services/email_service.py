@@ -97,6 +97,7 @@ Cordialement,
             # For demo purposes, if credentials are not set, simulate sending
             if not self.sender_email or not self.sender_password:
                 attachment_info = ""
+                attachment_names = []
                 if attachments:
                     attachment_names = [os.path.basename(f) for f in attachments]
                     attachment_info = f", Attachments: {', '.join(attachment_names)}"
@@ -107,7 +108,7 @@ Cordialement,
                         'to': recipient_email,
                         'subject': subject,
                         'preview': body[:100] + '...' if len(body) > 100 else body,
-                        'attachments': attachment_names if attachments else []
+                        'attachments': attachment_names
                     }
                 }
             
@@ -133,7 +134,11 @@ Cordialement,
                         try:
                             # Get MIME type dynamically
                             mime_type = get_mime_type(file_path)
-                            main_type, sub_type = mime_type.split('/', 1)
+                            if '/' in mime_type:
+                                main_type, sub_type = mime_type.split('/', 1)
+                            else:
+                                # Fallback to octet-stream if invalid MIME type
+                                main_type, sub_type = 'application', 'octet-stream'
                             
                             with open(file_path, 'rb') as f:
                                 part = MIMEBase(main_type, sub_type)

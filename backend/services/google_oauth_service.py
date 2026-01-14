@@ -317,7 +317,11 @@ class GoogleOAuthService:
                         try:
                             # Get MIME type dynamically
                             mime_type = get_mime_type(file_path)
-                            main_type, sub_type = mime_type.split('/', 1)
+                            if '/' in mime_type:
+                                main_type, sub_type = mime_type.split('/', 1)
+                            else:
+                                # Fallback to octet-stream if invalid MIME type
+                                main_type, sub_type = 'application', 'octet-stream'
                             
                             with open(file_path, 'rb') as f:
                                 part = MIMEBase(main_type, sub_type)
