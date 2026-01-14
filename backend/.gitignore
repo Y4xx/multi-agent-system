@@ -15,4 +15,5 @@ dist/
 .DS_Store
 uploads/
 exports/
+temp_cv/
 data/gmail_credentials.json

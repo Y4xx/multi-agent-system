@@ -8,11 +8,15 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 import shutil
+import logging
 
 from crew.crew import job_application_crew
 from agents.job_fetcher_agent import job_fetcher_agent
 from agents.application_agent import application_agent
-from services.utils import save_json_file
+from services.utils import save_json_file, sanitize_filename
+
+# Get logger (don't configure at module level)
+logger = logging.getLogger(__name__)
 
 # Create router
 router = APIRouter()
@@ -20,6 +24,10 @@ router = APIRouter()
 # Create uploads directory
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Create temporary CV directory for email attachments
+TEMP_CV_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp_cv")
+os.makedirs(TEMP_CV_DIR, exist_ok=True)
 
 # Pydantic models for request/response
 class MatchRequest(BaseModel):
@@ -48,6 +56,7 @@ class BulkApplyRequest(BaseModel):
 async def upload_cv(file: UploadFile = File(...)):
     """
     Upload a CV file and extract structured data using CrewAI.
+    Stores CV in temporary folder for email attachments (replaces previous CV).
     
     Args:
         file: The CV file (PDF, DOCX, or TXT)
@@ -64,6 +73,27 @@ async def upload_cv(file: UploadFile = File(...)):
         
         # Process CV using CrewAI crew
         cv_data = job_application_crew.analyze_cv_file(file_path)
+        
+        # Clean temp_cv directory (remove old CV files)
+        for old_file in os.listdir(TEMP_CV_DIR):
+            old_path = os.path.join(TEMP_CV_DIR, old_file)
+            try:
+                if os.path.isfile(old_path):
+                    os.remove(old_path)
+            except (OSError, PermissionError) as e:
+                logger.warning(f"Error removing old CV file {old_file}: {str(e)}")
+        
+        # Copy CV to temp_cv folder with standardized name
+        candidate_name = cv_data.get('name', 'Candidate')
+        safe_name = sanitize_filename(candidate_name)
+        temp_cv_filename = f"CV_{safe_name}.pdf"
+        temp_cv_path = os.path.join(TEMP_CV_DIR, temp_cv_filename)
+        
+        # Copy the uploaded file to temp_cv folder
+        shutil.copy2(file_path, temp_cv_path)
+        
+        # Store temp CV path in cv_data for later use
+        cv_data['temp_cv_path'] = temp_cv_path
         
         # Save parsed CV data
         data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")

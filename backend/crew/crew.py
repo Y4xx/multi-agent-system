@@ -26,6 +26,7 @@ from agents.cv_analysis_agent import cv_analysis_agent as legacy_cv_agent
 from agents.job_fetcher_agent import job_fetcher_agent as legacy_job_agent
 from agents.matching_agent import matching_agent as legacy_matching_agent
 from services.email_service import email_service
+from services.utils import sanitize_filename
 
 # Import new Groq-powered services
 from services.groq_cover_letter_service import groq_cover_letter_service
@@ -167,7 +168,7 @@ class JobApplicationCrew:
     def submit_application(self, cv_data: Dict, job_data: Dict, 
                           motivation_letter: str) -> Dict:
         """
-        Submit application using legacy email service.
+        Submit application using email service with PDF attachments.
         
         Args:
             cv_data: Parsed CV data
@@ -178,6 +179,8 @@ class JobApplicationCrew:
             Application submission result
         """
         applicant_name = cv_data.get('name', 'Applicant')
+        applicant_email = cv_data.get('email', '')
+        applicant_phone = cv_data.get('phone', '')
         recipient_email = job_data.get('application_email', '')
         job_title = job_data.get('title', '')
         company = job_data.get('company', '')
@@ -190,13 +193,33 @@ class JobApplicationCrew:
                 'job_title': job_title
             }
         
-        # Send the email using legacy service
+        # Generate PDF for motivation letter
+        safe_name = sanitize_filename(applicant_name)
+        safe_company = sanitize_filename(company)
+        
+        motivation_letter_filename = f"Lettre_Motivation_{safe_name}_{safe_company}.pdf"
+        motivation_letter_path = pdf_export_service.export_to_pdf(
+            cover_letter_text=motivation_letter,
+            candidate_name=applicant_name,
+            job_title=job_title,
+            company=company,
+            filename=motivation_letter_filename
+        )
+        
+        # Get CV path from cv_data (set during upload)
+        cv_path = cv_data.get('temp_cv_path', None)
+        
+        # Send the email using email service with attachments
         result = email_service.send_job_application(
             recipient_email=recipient_email,
             job_title=job_title,
             company=company,
             applicant_name=applicant_name,
-            motivation_letter=motivation_letter
+            motivation_letter=motivation_letter,
+            applicant_email=applicant_email,
+            applicant_phone=applicant_phone,
+            cv_path=cv_path,
+            motivation_letter_path=motivation_letter_path
         )
         
         return {

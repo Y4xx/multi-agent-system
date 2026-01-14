@@ -1,6 +1,6 @@
 from typing import Dict, List
 from services.email_service import email_service
-from services.utils import get_job_field
+from services.utils import get_job_field, sanitize_filename
 
 class ApplicationAgent:
     """
@@ -18,7 +18,7 @@ class ApplicationAgent:
         motivation_letter: str
     ) -> Dict:
         """
-        Send a job application via email.
+        Send a job application via email with PDF attachments.
         
         Args:
             cv_data: Parsed CV data
@@ -28,8 +28,11 @@ class ApplicationAgent:
         Returns:
             Dictionary with application status and details
         """
+        from services.pdf_export_service import pdf_export_service
+        
         applicant_name = cv_data.get('name', 'Applicant')
         applicant_email = cv_data.get('email', '')
+        applicant_phone = cv_data.get('phone', '')
         
         # Use format-agnostic field extraction
         recipient_email = get_job_field(job_data, 'application_email')
@@ -45,13 +48,33 @@ class ApplicationAgent:
                 'job_title': job_title
             }
         
-        # Send the email
+        # Generate PDF for motivation letter
+        safe_name = sanitize_filename(applicant_name)
+        safe_company = sanitize_filename(company)
+        
+        motivation_letter_filename = f"Lettre_Motivation_{safe_name}_{safe_company}.pdf"
+        motivation_letter_path = pdf_export_service.export_to_pdf(
+            cover_letter_text=motivation_letter,
+            candidate_name=applicant_name,
+            job_title=job_title,
+            company=company,
+            filename=motivation_letter_filename
+        )
+        
+        # Get CV path from cv_data
+        cv_path = cv_data.get('temp_cv_path', None)
+        
+        # Send the email with attachments
         result = email_service.send_job_application(
             recipient_email=recipient_email,
             job_title=job_title,
             company=company,
             applicant_name=applicant_name,
-            motivation_letter=motivation_letter
+            motivation_letter=motivation_letter,
+            applicant_email=applicant_email,
+            applicant_phone=applicant_phone,
+            cv_path=cv_path,
+            motivation_letter_path=motivation_letter_path
         )
         
         # Log the application

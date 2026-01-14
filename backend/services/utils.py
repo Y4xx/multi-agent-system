@@ -1,5 +1,6 @@
 import json
 import os
+import mimetypes
 from typing import Any, Dict, List
 from datetime import datetime
 
@@ -291,3 +292,44 @@ def get_job_field(job_data: Dict, field_name: str) -> str:
                 return str_value
     
     return ''
+
+
+def sanitize_filename(text: str) -> str:
+    """
+    Sanitize text for use in filenames.
+    Removes special characters and replaces spaces with underscores.
+    
+    Args:
+        text: Text to sanitize
+        
+    Returns:
+        Sanitized text safe for filenames
+    """
+    # Keep only alphanumeric characters, spaces, hyphens, and underscores
+    safe_text = "".join(c for c in text if c.isalnum() or c in (' ', '-', '_'))
+    # Strip and replace spaces with underscores
+    return safe_text.strip().replace(' ', '_')
+
+
+def get_mime_type(filepath: str) -> str:
+    """
+    Get MIME type for a file based on its extension.
+    
+    Args:
+        filepath: Path to the file
+        
+    Returns:
+        MIME type string (e.g., 'application/pdf')
+    """
+    # Initialize mimetypes if not already done
+    if not mimetypes.inited:
+        mimetypes.init()
+    
+    # Get MIME type from extension
+    mime_type, _ = mimetypes.guess_type(filepath)
+    
+    # Default to octet-stream if unknown
+    if mime_type is None:
+        mime_type = 'application/octet-stream'
+    
+    return mime_type
