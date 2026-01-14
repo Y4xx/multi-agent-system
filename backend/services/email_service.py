@@ -376,12 +376,40 @@ Email body:"""
             job_title, company, applicant_name, applicant_email, applicant_phone
         )
         
-        # Prepare attachments list
+        # Prepare attachments list with validation
         attachments = []
-        if cv_path and os.path.exists(cv_path):
-            attachments.append(cv_path)
-        if motivation_letter_path and os.path.exists(motivation_letter_path):
-            attachments.append(motivation_letter_path)
+        
+        # Validate CV attachment
+        if cv_path:
+            if os.path.exists(cv_path):
+                if os.path.isfile(cv_path) and os.access(cv_path, os.R_OK):
+                    attachments.append(cv_path)
+                    logger.info(f"CV file attached: {os.path.basename(cv_path)}")
+                else:
+                    logger.warning(f"CV file exists but is not readable: {cv_path}")
+            else:
+                logger.warning(f"CV file not found: {cv_path}")
+        else:
+            logger.warning("No CV path provided for job application")
+        
+        # Validate motivation letter attachment
+        if motivation_letter_path:
+            if os.path.exists(motivation_letter_path):
+                if os.path.isfile(motivation_letter_path) and os.access(motivation_letter_path, os.R_OK):
+                    attachments.append(motivation_letter_path)
+                    logger.info(f"Motivation letter attached: {os.path.basename(motivation_letter_path)}")
+                else:
+                    logger.warning(f"Motivation letter exists but is not readable: {motivation_letter_path}")
+            else:
+                logger.warning(f"Motivation letter not found: {motivation_letter_path}")
+        
+        # Verify we have at least one attachment
+        if not attachments:
+            logger.error("No valid attachments found for job application")
+            return {
+                'success': False,
+                'message': 'Cannot send application: No valid attachments found (CV or motivation letter)'
+            }
         
         # Generate HTML version for better formatting
         html_body = self._generate_html_email_for_application(

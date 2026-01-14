@@ -65,6 +65,19 @@ async def upload_cv(file: UploadFile = File(...)):
         Parsed CV data
     """
     try:
+        # Verify temp_cv directory exists and is writable
+        if not os.path.exists(TEMP_CV_DIR):
+            try:
+                os.makedirs(TEMP_CV_DIR, exist_ok=True)
+                logger.info(f"Created temporary CV directory: {TEMP_CV_DIR}")
+            except OSError as e:
+                logger.error(f"Failed to create temp_cv directory: {str(e)}")
+                raise HTTPException(status_code=500, detail="Failed to create temporary directory for CV storage")
+        
+        if not os.access(TEMP_CV_DIR, os.W_OK):
+            logger.error(f"Temp_cv directory is not writable: {TEMP_CV_DIR}")
+            raise HTTPException(status_code=500, detail="Temporary directory is not writable")
+        
         # Save uploaded file
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         
@@ -74,23 +87,35 @@ async def upload_cv(file: UploadFile = File(...)):
         # Process CV using CrewAI crew
         cv_data = job_application_crew.analyze_cv_file(file_path)
         
-        # Clean temp_cv directory (remove old CV files)
+        # Clean temp_cv directory (remove old CV files - only one CV allowed at a time)
         for old_file in os.listdir(TEMP_CV_DIR):
             old_path = os.path.join(TEMP_CV_DIR, old_file)
             try:
                 if os.path.isfile(old_path):
                     os.remove(old_path)
+                    logger.info(f"Removed old CV file: {old_file}")
             except (OSError, PermissionError) as e:
                 logger.warning(f"Error removing old CV file {old_file}: {str(e)}")
         
-        # Copy CV to temp_cv folder with standardized name
+        # Copy CV to temp_cv folder with standardized name, preserving extension
         candidate_name = cv_data.get('name', 'Candidate')
         safe_name = sanitize_filename(candidate_name)
-        temp_cv_filename = f"CV_{safe_name}.pdf"
+        
+        # Preserve original file extension
+        _, file_extension = os.path.splitext(file.filename)
+        if not file_extension:
+            file_extension = '.pdf'  # Default to .pdf if no extension
+        
+        temp_cv_filename = f"CV_{safe_name}{file_extension}"
         temp_cv_path = os.path.join(TEMP_CV_DIR, temp_cv_filename)
         
         # Copy the uploaded file to temp_cv folder
-        shutil.copy2(file_path, temp_cv_path)
+        try:
+            shutil.copy2(file_path, temp_cv_path)
+            logger.info(f"Saved CV to temporary directory: {temp_cv_filename}")
+        except (OSError, PermissionError) as e:
+            logger.error(f"Failed to copy CV to temp directory: {str(e)}")
+            raise HTTPException(status_code=500, detail="Failed to save CV to temporary directory")
         
         # Store temp CV path in cv_data for later use
         cv_data['temp_cv_path'] = temp_cv_path
@@ -108,7 +133,7 @@ async def upload_cv(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error uploading CV: {str(e)}")
+        logger.error(f"Error uploading CV: {str(e)}")
         raise HTTPException(status_code=500, detail="Error processing CV file")
 
 

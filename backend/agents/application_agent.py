@@ -1,6 +1,11 @@
 from typing import Dict, List
+import os
+import logging
 from services.email_service import email_service
 from services.utils import get_job_field, sanitize_filename
+
+# Get logger
+logger = logging.getLogger(__name__)
 
 class ApplicationAgent:
     """
@@ -61,8 +66,20 @@ class ApplicationAgent:
             filename=motivation_letter_filename
         )
         
-        # Get CV path from cv_data
+        # Get CV path from cv_data and verify it exists
         cv_path = cv_data.get('temp_cv_path', None)
+        
+        # Verify CV file exists before sending
+        if cv_path:
+            if not os.path.exists(cv_path):
+                logger.warning(f"CV file not found at path: {cv_path}")
+                cv_path = None
+            elif not os.path.isfile(cv_path):
+                logger.warning(f"CV path is not a file: {cv_path}")
+                cv_path = None
+        
+        if not cv_path:
+            logger.warning("No valid CV file available for application")
         
         # Send the email with attachments
         result = email_service.send_job_application(
