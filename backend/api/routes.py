@@ -21,6 +21,10 @@ router = APIRouter()
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Create temporary CV directory for email attachments
+TEMP_CV_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp_cv")
+os.makedirs(TEMP_CV_DIR, exist_ok=True)
+
 # Pydantic models for request/response
 class MatchRequest(BaseModel):
     cv_data: dict
@@ -48,6 +52,7 @@ class BulkApplyRequest(BaseModel):
 async def upload_cv(file: UploadFile = File(...)):
     """
     Upload a CV file and extract structured data using CrewAI.
+    Stores CV in temporary folder for email attachments (replaces previous CV).
     
     Args:
         file: The CV file (PDF, DOCX, or TXT)
@@ -64,6 +69,27 @@ async def upload_cv(file: UploadFile = File(...)):
         
         # Process CV using CrewAI crew
         cv_data = job_application_crew.analyze_cv_file(file_path)
+        
+        # Clean temp_cv directory (remove old CV files)
+        for old_file in os.listdir(TEMP_CV_DIR):
+            old_path = os.path.join(TEMP_CV_DIR, old_file)
+            try:
+                if os.path.isfile(old_path):
+                    os.remove(old_path)
+            except Exception as e:
+                print(f"Error removing old CV file {old_file}: {str(e)}")
+        
+        # Copy CV to temp_cv folder with standardized name
+        candidate_name = cv_data.get('name', 'Candidate')
+        safe_name = "".join(c for c in candidate_name if c.isalnum() or c in (' ', '-', '_')).strip().replace(' ', '_')
+        temp_cv_filename = f"CV_{safe_name}.pdf"
+        temp_cv_path = os.path.join(TEMP_CV_DIR, temp_cv_filename)
+        
+        # Copy the uploaded file to temp_cv folder
+        shutil.copy2(file_path, temp_cv_path)
+        
+        # Store temp CV path in cv_data for later use
+        cv_data['temp_cv_path'] = temp_cv_path
         
         # Save parsed CV data
         data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")

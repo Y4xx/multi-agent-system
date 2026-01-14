@@ -7,13 +7,16 @@ import os
 import json
 import base64
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import datetime, timedelta
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -269,15 +272,17 @@ class GoogleOAuthService:
         self,
         recipient_email: str,
         subject: str,
-        body: str
+        body: str,
+        attachments: Optional[List[str]] = None
     ) -> Dict:
         """
-        Send email using Gmail API.
+        Send email using Gmail API with optional attachments.
         
         Args:
             recipient_email: Email address of the recipient
             subject: Email subject
             body: Email body (plain text or HTML)
+            attachments: Optional list of file paths to attach
             
         Returns:
             Dictionary with success status and message
@@ -294,13 +299,39 @@ class GoogleOAuthService:
             # Build Gmail service
             service = build('gmail', 'v1', credentials=credentials)
             
-            # Create message
-            message = MIMEText(body)
-            message['to'] = recipient_email
-            message['subject'] = subject
-            
-            # Encode message
-            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+            # Create message with or without attachments
+            if attachments:
+                # Create multipart message
+                message = MIMEMultipart()
+                message['to'] = recipient_email
+                message['subject'] = subject
+                
+                # Add body
+                msg_body = MIMEText(body, 'html' if '<html>' in body.lower() else 'plain')
+                message.attach(msg_body)
+                
+                # Add attachments
+                for file_path in attachments:
+                    if os.path.exists(file_path):
+                        content_type = 'application/pdf'  # Assuming PDF files
+                        
+                        with open(file_path, 'rb') as f:
+                            part = MIMEBase('application', 'octet-stream')
+                            part.set_payload(f.read())
+                            encoders.encode_base64(part)
+                            part.add_header(
+                                'Content-Disposition',
+                                f'attachment; filename={os.path.basename(file_path)}'
+                            )
+                            message.attach(part)
+                
+                raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+            else:
+                # Simple message without attachments
+                message = MIMEText(body)
+                message['to'] = recipient_email
+                message['subject'] = subject
+                raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
             
             # Send message
             result = service.users().messages().send(
