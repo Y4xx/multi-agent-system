@@ -16,7 +16,7 @@ from agents.application_agent import application_agent
 from services.utils import save_json_file, sanitize_filename
 
 # Get logger (don't configure at module level)
-logger = logger.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 # Create router
 router = APIRouter()

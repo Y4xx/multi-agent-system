@@ -7,13 +7,14 @@ from email import encoders
 from typing import Optional, List
 import os
 from dotenv import load_dotenv
+import openai
 from openai import OpenAI
 from services.utils import get_mime_type
 
 load_dotenv()
 
 # Get logger (don't configure at module level)
-logger = logger.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class EmailService:
     # Email body template constant
