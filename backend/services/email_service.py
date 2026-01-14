@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from services.utils import get_mime_type
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-
 load_dotenv()
+
+# Get logger (don't configure at module level)
+logger = logger.getLogger(__name__)
 
 class EmailService:
     # Email body template constant
@@ -144,7 +144,7 @@ Cordialement,
                                 )
                                 message.attach(part)
                         except (OSError, IOError) as e:
-                            logging.error(f"Error attaching file {file_path}: {str(e)}")
+                            logger.error(f"Error attaching file {file_path}: {str(e)}")
             
             # Send email
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
@@ -158,13 +158,13 @@ Cordialement,
             }
             
         except smtplib.SMTPException as e:
-            logging.error(f"SMTP error sending email: {str(e)}")
+            logger.error(f"SMTP error sending email: {str(e)}")
             return {
                 'success': False,
                 'message': 'Failed to send email. Please check your email configuration.'
             }
         except Exception as e:
-            logging.error(f"Unexpected error sending email: {str(e)}")
+            logger.error(f"Unexpected error sending email: {str(e)}")
             return {
                 'success': False,
                 'message': 'Failed to send email. Please check your email configuration.'
@@ -227,10 +227,10 @@ Subject line:"""
             return subject
             
         except openai.OpenAIError as e:
-            logging.warning(f"OpenAI error generating subject: {str(e)}")
+            logger.warning(f"OpenAI error generating subject: {str(e)}")
             return f"Candidature de {applicant_name} pour le poste de {job_title} - {company}"
         except Exception as e:
-            logging.error(f"Unexpected error generating AI subject: {str(e)}")
+            logger.error(f"Unexpected error generating AI subject: {str(e)}")
             return f"Candidature de {applicant_name} pour le poste de {job_title} - {company}"
     
     def _generate_fallback_email_body(
@@ -318,16 +318,13 @@ Email body:"""
             body = response.choices[0].message.content.strip()
             return body
             
-            body = response.choices[0].message.content.strip()
-            return body
-            
         except openai.OpenAIError as e:
-            logging.warning(f"OpenAI error generating email body: {str(e)}")
+            logger.warning(f"OpenAI error generating email body: {str(e)}")
             return self._generate_fallback_email_body(
                 job_title, company, applicant_name, applicant_email, applicant_phone
             )
         except Exception as e:
-            logging.error(f"Unexpected error generating AI email body: {str(e)}")
+            logger.error(f"Unexpected error generating AI email body: {str(e)}")
             return self._generate_fallback_email_body(
                 job_title, company, applicant_name, applicant_email, applicant_phone
             )

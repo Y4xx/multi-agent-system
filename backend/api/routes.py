@@ -15,8 +15,8 @@ from agents.job_fetcher_agent import job_fetcher_agent
 from agents.application_agent import application_agent
 from services.utils import save_json_file, sanitize_filename
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Get logger (don't configure at module level)
+logger = logger.getLogger(__name__)
 
 # Create router
 router = APIRouter()
@@ -81,7 +81,7 @@ async def upload_cv(file: UploadFile = File(...)):
                 if os.path.isfile(old_path):
                     os.remove(old_path)
             except (OSError, PermissionError) as e:
-                logging.warning(f"Error removing old CV file {old_file}: {str(e)}")
+                logger.warning(f"Error removing old CV file {old_file}: {str(e)}")
         
         # Copy CV to temp_cv folder with standardized name
         candidate_name = cv_data.get('name', 'Candidate')
